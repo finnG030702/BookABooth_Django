@@ -26,8 +26,8 @@ class Booking(models.Model):
     confirmed = models.DateTimeField(blank=True, null=True)
     price = models.DecimalField(max_digits=21, decimal_places=2, blank=True, null=True)
     cancellationfee = models.DecimalField(max_digits=21, decimal_places=2, blank=True, null=True)
-    company = models.ForeignKey('Company', on_delete=models.DO_NOTHING)
-    booth = models.ForeignKey('Booth', on_delete=models.SET_NULL, null=True, blank=True)
+    company = models.ForeignKey('Company', on_delete=models.DO_NOTHING, related_name="companies")
+    booth = models.ForeignKey('Booth', on_delete=models.SET_NULL, null=True, blank=True, related_name="booths")
 
 
 class Booth(models.Model):
@@ -45,6 +45,9 @@ class Booth(models.Model):
     available = models.BooleanField(default=True)
     location = models.ForeignKey('Location', on_delete=models.SET_NULL, blank=True, null=True, related_name='booths')
     service_package = models.ManyToManyField('ServicePackage', blank=True, related_name='servicePackages')
+
+    def __str__(self):
+        return self.title
 
 
 class Company(models.Model):
@@ -64,6 +67,9 @@ class Company(models.Model):
     description = models.CharField(max_length=1024, blank=True, null=True)
     waiting_list = models.BooleanField(default=False)
     exhibitor_list = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.name
 
 
 class System(models.Model):
@@ -90,6 +96,9 @@ class User(AbstractUser):
     activation_uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
     is_verified = models.BooleanField(default=False)
 
+    def __str__(self):
+        return self.username
+
 
 class Location(models.Model):
     """
@@ -100,6 +109,9 @@ class Location(models.Model):
     """
     location = models.CharField(unique=True, max_length=200, blank=True, null=True)
     site_plan = models.ImageField(upload_to='site_plan/', blank=True, null=True)
+
+    def __str__(self):
+        return self.location
 
 
 class ServicePackage(models.Model):
@@ -113,3 +125,6 @@ class ServicePackage(models.Model):
     name = models.CharField(max_length=255, blank=True, null=True)
     price = models.DecimalField(max_digits=21, decimal_places=2, blank=True, null=True)
     description = models.CharField(max_length=255, blank=True, null=True)
+
+    def __str__(self):
+        return self.name
