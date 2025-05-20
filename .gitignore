@@ -5,3 +5,7 @@ __pycache__/
 db.sqlite3
 .DS_Store
 .vscode/
+.temp/
+BookABooth_Django/media/site_plan
+BookABooth_Django/media/company_logo
+BookABooth_Django/__pycache__/
