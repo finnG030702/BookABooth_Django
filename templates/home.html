@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% block title %}BookABooth - Home{% endblock %}
+
+{% block content %}
+{% if user.is_authenticated %}
+<p>Hi {{ user.username }}!</p>
+<p><a href="{% url 'password_change' %}">Passwort ändern</a></p>
+<form action="{% url 'logout' %}" method="post">
+    {% csrf_token %}
+    <button type="submit">Logout</button>
+</form>
+{% else %}
+<p>You are not logged in</p>
+<p><a href="{% url 'password_reset' %}">Passwort zurücksetzen</a></p>
+<p><a href="{% url 'login' %}">Login</a></p>
+{% endif %}
+{% endblock %}
