@@ -4,7 +4,7 @@
 
 {% block content %}
 {% if user.is_authenticated %}
-<p>Hi {{ user.username }}!</p>
+<p class="underline decoration-sky-500">Hi {{ user.username }}!</p>
 <p><a href="{% url 'password_change' %}">Passwort ändern</a></p>
 <form action="{% url 'logout' %}" method="post">
     {% csrf_token %}
