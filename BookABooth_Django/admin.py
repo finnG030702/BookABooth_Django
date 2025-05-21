@@ -89,6 +89,19 @@ class UserAdmin(UserAdmin):
         'is_superuser',
     )
 
+    add_fieldsets = (
+        (None, {
+            'classes': ('wide',),
+            'fields': ('username', 'email', 'first_name', 'password1', 'password2'),
+        }),
+    )
+
+    fieldsets = (
+        (None, {'fields': ('username', 'password')}),
+        ('Personal info', {'fields': ('first_name', 'last_name', 'email', 'phone')}),
+        ('Permissions', {'fields': ('is_active', 'is_staff', 'is_superuser')}),
+    )
+
 
 class SystemAdmin(admin.ModelAdmin):
 

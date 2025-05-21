@@ -1,6 +1,5 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
-import uuid
 
 class Booking(models.Model):
     """
@@ -82,19 +81,15 @@ class System(models.Model):
     
 class User(AbstractUser):
     """
-    User, which extends the already established Django-User.
+    User, which extends the already established Django-User. UUID and is_verified are managed ELSEWHERE
 
     phone (decimal): Phone number of the user.
     privacy_policy_accepted (boolean): Will be set True when the user agrees to the privacy policy.
-    company (Company): The company the user works for.
-    activation_uuid (uuid): ID the user will authenticate himself with.
-    is_verified (boolean): True when the user authenticated his account. 
+    company (Company): The company the user works for. 
     """
     phone = models.CharField(max_length=20, blank=True, null=True)
     privacy_policy_accepted = models.BooleanField(default=False)
     company = models.ForeignKey('Company', on_delete=models.SET_NULL, null=True, blank=True, related_name='employees')
-    activation_uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
-    is_verified = models.BooleanField(default=False)
 
     def __str__(self):
         return self.username
