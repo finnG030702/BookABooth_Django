@@ -1,26 +1,92 @@
 <!DOCTYPE html>
 <html lang="de">
-    <head>
-        {% load static %}
-        <link rel="stylesheet" href="{% static 'dist/output.css' %}">
-        <meta charset="UTF-8">
-        <title>{% block title %}BookABooth in Django{% endblock %}</title>
-    </head>
-    <body>
-        <nav>
-            <ul>
-                <li><a href="{% url 'home' %}">Home</a></li>
-                {% if user.is_authenticated %}
-                    <li><a href="{% url 'logout' %}">Logout</a></li>
-                {% else %}
-                    <li><a href="{% url 'login' %}">Login</a></li>
-                {% endif %}
-            </ul>
-        </nav>
 
-        <main>
-            {% block content %}
-            {% endblock %}
-        </main>
-    </body>
+<head>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'dist/output.css' %}">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{% block title %}BookABooth in Django{% endblock %}</title>
+</head>
+
+<body class="bg-gray-100">
+    <header class="bg-white">
+        <nav class="flex justify-between items-center w-[92%] mx-auto">
+            <div class="flex items-center gap-2">
+                <img src="https://www.jade-hs.de/typo3conf/ext/jhs_site/Resources/Public/Images/jadehs-logo.png" alt="Jade Hochschule Logo" class="h-18">
+                <p>BookABooth</p>
+            </div>
+            <div class="nav-links duration-500 md:static absolute bg-white md:min-h-fit min-h-[60vh] left-0 top-[-100%] md:w-auto w-full flex items-center px-5">
+                <ul class="flex md:flex-row flex-col md:items-center md:gap-[4vw] gap-8">
+                    <li class="flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />
+                        </svg>
+                        <a class="hover:text-gray-500" href="{% url 'home' %}">Home</a>
+                    </li>
+                    <li class="flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M3.75 21h16.5M4.5 3h15M5.25 3v18m13.5-18v18M9 6.75h1.5m-1.5 3h1.5m-1.5 3h1.5m3-6H15m-1.5 3H15m-1.5 3H15M9 21v-3.375c0-.621.504-1.125 1.125-1.125h3.75c.621 0 1.125.504 1.125 1.125V21" />
+                        </svg>
+                        <a class="hover:text-gray-500" href="#">Ausstellerliste</a>
+                    </li>
+                    {% if user.is_staff %}
+                    <li class="flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M3.375 19.5h17.25m-17.25 0a1.125 1.125 0 0 1-1.125-1.125M3.375 19.5h7.5c.621 0 1.125-.504 1.125-1.125m-9.75 0V5.625m0 12.75v-1.5c0-.621.504-1.125 1.125-1.125m18.375 2.625V5.625m0 12.75c0 .621-.504 1.125-1.125 1.125m1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125m0 3.75h-7.5A1.125 1.125 0 0 1 12 18.375m9.75-12.75c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125m19.5 0v1.5c0 .621-.504 1.125-1.125 1.125M2.25 5.625v1.5c0 .621.504 1.125 1.125 1.125m0 0h17.25m-17.25 0h7.5c.621 0 1.125.504 1.125 1.125M3.375 8.25c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125m17.25-3.75h-7.5c-.621 0-1.125.504-1.125 1.125m8.625-1.125c.621 0 1.125.504 1.125 1.125v1.5c0 .621-.504 1.125-1.125 1.125m-17.25 0h7.5m-7.5 0c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125M12 10.875v-1.5m0 1.5c0 .621-.504 1.125-1.125 1.125M12 10.875c0 .621.504 1.125 1.125 1.125m-2.25 0c.621 0 1.125.504 1.125 1.125M13.125 12h7.5m-7.5 0c-.621 0-1.125.504-1.125 1.125M20.625 12c.621 0 1.125.504 1.125 1.125v1.5c0 .621-.504 1.125-1.125 1.125m-17.25 0h7.5M12 14.625v-1.5m0 1.5c0 .621-.504 1.125-1.125 1.125M12 14.625c0 .621.504 1.125 1.125 1.125m-2.25 0c.621 0 1.125.504 1.125 1.125m0 1.5v-1.5m0 0c0-.621.504-1.125 1.125-1.125m0 0h7.5" />
+                        </svg>
+                        <a class="hover:text-gray-500" href="/admin/">Admin</a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </div>
+            <div class="flex items-center gap-6">
+                {% if user.is_authenticated %}
+                <form action="{% url 'logout' %}" method="post">
+                    {% csrf_token %}
+                    <button class="bg-blue-500 text-white px-5 py-2 rounded-full hover:bg-[#87acec] shadow-lg">Logout</button>
+                </form>
+                {% else %}
+                <button class="bg-blue-500 text-white px-5 py-2 rounded-full hover:bg-[#87acec] shadow-lg"><a href="{% url 'login' %}">Zugang</a></button>
+                {% endif %}
+                <!-- Hamburger Menü für mobile Ansicht -->
+                <button id="menu-toggle" class="md:hidden p-2">
+                    <div onclick="onToggleMenu(this)" class="cursor-pointer md:hidden">
+                        <!-- Menü-Icon-->
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-8 menu-icon">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+                        </svg>
+                        <!-- Schließen-Icon-->
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="close-icon size-8 hidden">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+                        </svg>
+                    </div>
+                </button>
+            </div>
+        </nav>
+    </header>
+
+
+    <main class="container mx-auto mt-10">
+        {% block content %}
+        {% endblock %}
+    </main>
+
+    <script>
+        function onToggleMenu(container){
+            const menuIcon = container.querySelector('.menu-icon');
+            const closeIcon = container.querySelector('.close-icon');
+            const navLinks = document.querySelector('.nav-links');
+
+            menuIcon.classList.toggle('hidden');
+            closeIcon.classList.toggle('hidden');
+            navLinks.classList.toggle('top-[9%]');
+        }
+    </script>
+
+</body>
+
 </html>
