@@ -60,7 +60,7 @@ class Company(models.Model):
     waiting_list (boolean): Boolean, if the company is on the waiting list or not.
     exhibitor_list (boolean): Boolean, if the company is on the exhibitor list or not.
     """
-    name = models.CharField(max_length=200, blank=True, null=True)
+    name = models.CharField(max_length=200, blank=True, null=True, unique=True)
     billing_address = models.CharField(max_length=255, blank=True, null=True)
     logo = models.ImageField(upload_to='company_logos/', blank=True, null=True)
     description = models.CharField(max_length=1024, blank=True, null=True)
