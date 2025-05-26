@@ -1,7 +1,7 @@
 from django.contrib.auth.forms import UserChangeForm, UserCreationForm, AuthenticationForm, PasswordChangeForm, PasswordResetForm, SetPasswordForm
 from django import forms
 
-from .models import User, System
+from .models import User
 
 class CustomUserCreationForm(UserCreationForm):
     """
@@ -73,13 +73,3 @@ class CustomPasswordResetConfirmForm(SetPasswordForm):
             field.widget.attrs.update({
                 'class': 'w-full bg-white border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400',
             })
-
-class SystemToggleForm(forms.ModelForm):
-    class Meta:
-        model = System
-        fields = ['enabled']
-        widgets = {
-            'enabled': forms.CheckboxInput(attrs={
-                'class': 'toggle-checkbox',
-            })
-        }

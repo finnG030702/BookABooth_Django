@@ -1,10 +1,9 @@
-from django.http import JsonResponse
 from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.views import View
 from django.views.generic import TemplateView, CreateView
 from django.contrib.auth.views import LoginView, PasswordChangeView, PasswordResetView, PasswordResetCompleteView, PasswordResetDoneView, PasswordResetConfirmView
-from .forms import CustomPasswordResetForm, CustomUserCreationForm, CustomUserLoginForm, CustomPasswordChangeForm, CustomPasswordResetConfirmForm, SystemToggleForm
+from .forms import CustomPasswordResetForm, CustomUserCreationForm, CustomUserLoginForm, CustomPasswordChangeForm, CustomPasswordResetConfirmForm
 from .models import Company, System
 
 # Create your views here.
@@ -62,11 +61,11 @@ class PasswordResetCompleteView(PasswordResetCompleteView):
 class SystemToggleView(View):
     template_name = "adminMenu/system_toggle.html"
 
-    def get(self, request, *args, **kwargs):
+    def get(self, request):
         system = System.objects.first()
         return render(request, self.template_name, {"system": system})
     
-    def post(self, request, *args, **kwargs):
+    def post(self, request):
         system = System.objects.first()
         enabled = request.POST.get("enabled") == "on"
         system.enabled = enabled
