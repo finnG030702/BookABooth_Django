@@ -2,7 +2,7 @@
 
 {% block content %}
 
-{% if user.is_authenticated %}
+{% if user.is_authenticated and not user.is_staff %}
 
 <div class="container mx-auto">
     <section class="flex flex-col items-center justify-center h-16">
@@ -11,12 +11,21 @@
     </section>
 </div>
 
+{% elif user.is_authenticated and user.is_staff %}
+
+<div class="container mx-auto">
+    <section class="flex flex-col items-center justify-center h-16">
+        <h1 class="text-5xl">Wilkommen {{ user }}!</h1>
+        <p class="mt-3">Hier entsteht das Admin-Panel</p>
+    </section>
+</div>
+
 {% else %}
 
 <div class="container mx-auto">
     <section class="flex flex-col items-center w-full h-screen">
         <h1 class="text-5xl">Wilkommen bei BookABooth, jetzt auch in Django.</h1>
-        <p class="mt-3">Im Rahmen meiner Bachelorarbeit entsteht hier eine Anwendung, welche bereits existiert.</p>
+        <p class="mt-3">Im Rahmen meiner Bachelorarbeit entsteht hier eine Anwendung, welche schon mit Spring Boot umgesetzt wurde.</p>
     </section>"
 </div>
 {% endif %}

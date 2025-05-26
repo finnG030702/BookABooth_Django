@@ -78,6 +78,10 @@ class System(models.Model):
     enabled (boolean): When enabled, the booking is permitted for users.
     """
     enabled = models.BooleanField(default=False)
+
+    def __str__(self):
+        x = str(self.id)
+        return x
     
 class User(AbstractUser):
     """
