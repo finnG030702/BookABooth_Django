@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="max-w mx-auto mt-10 p-6 bg-white rounded-lg shadow-md">
+    <h2 class="text-xl font-semibold mb-6 text-center">{{ view.object.pk|yesno:"Lageplan bearbeiten,Lageplan erstellen" }}</h2>
+
+    <form method="post" enctype="multipart/form-data" class="space-y-4">
+
+        {% csrf_token %}
+
+        <p>
+            {{ form.location.label_tag}}
+            {{ form.location }}
+        </p>
+        
+        <p>
+            <label for="id_site_plan" class="cursor-pointer inline-block px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">Lageplan hochladen</label>
+            {{ form.site_plan }}    <!-- Per CSS versteckt -->
+
+            <!--- Zeigt den Namen der hochgeladenen Datei -->
+            <span id="file-name" class="ml-2 text-gay-700 italic"></span>
+        </p>
+
+        <div class="mb-4">
+            <img id="preview" src="{% if view.object and view.object.site_plan %}{{ view.object.site_plan.url }}{% endif %}" alt="Lageplan Preview" class="max-w-xs max-h-64 border rounded-lg">
+        </div>
+
+        <div class="flex justify-start">
+            <a href="{% url 'location_list' %}"
+               class="px-4 py-2 bg-gray-300 text-gray-600 rounded-lg hover:bg-gray-400 transition mr-2">Abbrechen</a>
+            <button type="submit"
+                class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition cursor-pointer">Speichern</button>
+        </div>
+    </form>
+</div>
+
+<style>
+    #id_site_plan {
+        opacity: 0;
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        z-index: -1;
+    }
+</style>
+
+<script>
+    const input = document.getElementById('id_site_plan');
+    const preview = document.getElementById('preview');
+    const fileNameSpan = document.getElementById('file-name');
+
+    input.addEventListener('change', function(event) {
+        const [file] = input.files;
+        if (file) {
+            preview.src = URL.createObjectURL(file);
+            fileNameSpan.textContent = file.name;
+        } else {
+            preview.src = '';
+            fileNameSpan.textContent = '';
+        }
+    });
+</script>
+
+{% endblock %}

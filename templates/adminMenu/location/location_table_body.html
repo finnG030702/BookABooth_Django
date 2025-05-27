@@ -1,0 +1,36 @@
+{% for location in locations %}
+<tr>
+    <td class="px-6 py-4 whitespace-nowrap text-sm text-blue-600 hover:underline">
+        <a href="{% url 'location_detail' location.pk %}">{{ location.id }}</a>
+    </td>
+    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ location.location }}</td>
+    <td class="px-6 py-4 text-right space-x-2">
+        <a href="{% url 'location_detail' location.pk %}" class="text-white hover:bg-blue-600 rounded-lg px-4 py-2 bg-blue-500">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+                class="size-6 inline-block">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                    d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+            </svg>
+            Details</a>
+        <a href="{% url 'location_edit' location.pk %}"
+            class="text-white px-4 py-2 bg-yellow-500 rounded-lg hover:bg-yellow-600">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+                class="size-6 inline-block">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                    d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L6.832 19.82a4.5 4.5 0 0 1-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 0 1 1.13-1.897L16.863 4.487Zm0 0L19.5 7.125" />
+            </svg>
+            Bearbeiten</a>
+        <button onclick="openDeleteModal('{{ location.id }}', '{{ location.location }}')"  class="text-white bg-red-500 px-4 py-2 rounded-lg hover:bg-red-600 cursor-pointer">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+                class="size-6 inline-block">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+            </svg>
+            Löschen</button>
+    </td>
+</tr>
+{% empty %}
+<tr>
+    <td colspan="3" class="px-6 py-4 text-center text-sm text-gray-500">Keine Lokationen gefunden.</td>
+</tr>
+{% endfor %}

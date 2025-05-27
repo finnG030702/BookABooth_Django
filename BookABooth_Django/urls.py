@@ -8,7 +8,8 @@ from .views import (HomeView,
                     PasswordResetDoneView, 
                     PasswordResetConfirmView, 
                     PasswordResetCompleteView, 
-                    SystemToggleView, 
+                    SystemToggleView,
+                    LocationListView, LocationCreateView, LocationDetailView, LocationUpdateView, LocationDeleteView, 
                     )
 
 urlpatterns = [
@@ -22,4 +23,10 @@ urlpatterns = [
     path("accounts/reset/done/", PasswordResetCompleteView.as_view(), name="password_reset_complete"),
     path("system/", SystemToggleView.as_view(), name="system"),
     path("system/toggle/", SystemToggleView.as_view(), name="system_toggle"),
+    path("location/", LocationListView.as_view(), name="location_list"),
+    path("api/location_list", LocationListView.location_table_partial, name="location_table_partial"),
+    path("location/create/", LocationCreateView.as_view(), name="location_create"),
+    path("location/<int:pk>/", LocationDetailView.as_view(), name="location_detail"),
+    path("location/<int:pk>/edit/", LocationUpdateView.as_view(), name="location_edit"),
+    path("location/<int:pk>/delete/", LocationDeleteView.as_view(), name="location_delete"),
 ]

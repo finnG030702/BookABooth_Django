@@ -1,7 +1,7 @@
 from django.contrib.auth.forms import UserChangeForm, UserCreationForm, AuthenticationForm, PasswordChangeForm, PasswordResetForm, SetPasswordForm
 from django import forms
 
-from .models import User
+from .models import Location, User
 
 class CustomUserCreationForm(UserCreationForm):
     """
@@ -73,3 +73,12 @@ class CustomPasswordResetConfirmForm(SetPasswordForm):
             field.widget.attrs.update({
                 'class': 'w-full bg-white border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400',
             })
+
+class LocationForm(forms.ModelForm):
+    class Meta:
+        model = Location
+        fields = ['location', 'site_plan']
+        widgets = {
+            'location': forms.TextInput(attrs={'class': 'w-full bg-white border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400'}),
+            'site_plan': forms.ClearableFileInput(attrs={'class': 'w-full bg-white border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400'}),
+        }

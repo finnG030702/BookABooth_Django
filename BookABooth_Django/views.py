@@ -1,10 +1,10 @@
 from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.views import View
-from django.views.generic import TemplateView, CreateView
+from django.views.generic import TemplateView, CreateView, ListView, DetailView, UpdateView, DeleteView
 from django.contrib.auth.views import LoginView, PasswordChangeView, PasswordResetView, PasswordResetCompleteView, PasswordResetDoneView, PasswordResetConfirmView
-from .forms import CustomPasswordResetForm, CustomUserCreationForm, CustomUserLoginForm, CustomPasswordChangeForm, CustomPasswordResetConfirmForm
-from .models import Company, System
+from .forms import CustomPasswordResetForm, CustomUserCreationForm, CustomUserLoginForm, CustomPasswordChangeForm, CustomPasswordResetConfirmForm, LocationForm
+from .models import Company, System, Location
 
 # Create your views here.
 
@@ -59,7 +59,10 @@ class PasswordResetCompleteView(PasswordResetCompleteView):
     template_name = "registration/password_reset_complete.html"
 
 class SystemToggleView(View):
-    template_name = "adminMenu/system_toggle.html"
+    """
+    View for the SystemToggle.html. Changes the enabled-Attribute of system in its response.
+    """
+    template_name = "adminMenu/system/system_toggle.html"
 
     def get(self, request):
         system = System.objects.first()
@@ -70,4 +73,36 @@ class SystemToggleView(View):
         enabled = request.POST.get("enabled") == "on"
         system.enabled = enabled
         system.save()
-        return render(request, "adminMenu/_system_status.html", {"system": system})
+        return render(request, "adminMenu/system/_system_status.html", {"system": system})
+    
+class LocationListView(ListView):
+    model = Location
+    template_name = "adminMenu/location/location_list.html"
+    context_object_name = 'locations'
+
+    def location_table_partial(request):
+        locations = Location.objects.all()
+        return render(request, "adminMenu/location/location_table_body.html", {"locations": locations})
+
+class LocationCreateView(CreateView):
+    model = Location
+    form_class = LocationForm
+    template_name = "adminMenu/location/location_form.html"
+    success_url = reverse_lazy("location_list")
+
+class LocationDetailView(DetailView):
+    model = Location
+    template_name = "adminMenu/location/location_detail.html"
+
+class LocationUpdateView(UpdateView):
+    model = Location
+    form_class = LocationForm
+    template_name = "adminMenu/location/location_form.html"
+    success_url = reverse_lazy("location_list")
+
+class LocationDeleteView(DeleteView):
+    model = Location
+    success_url = reverse_lazy("location_list")
+
+    def delete(self, request, *args, **kwargs):
+        return super().delete(request, *args, **kwargs)

@@ -106,7 +106,7 @@ class Location(models.Model):
     location (str): Name of the Location (Aula, Zelt 1, ...)
     site_plan (image): Site plan of the given location.
     """
-    location = models.CharField(unique=True, max_length=200, blank=True, null=True)
+    location = models.CharField(unique=True, max_length=200)
     site_plan = models.ImageField(upload_to='site_plan/', blank=True, null=True)
 
     def __str__(self):
