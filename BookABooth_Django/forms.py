@@ -1,7 +1,7 @@
 from django.contrib.auth.forms import UserChangeForm, UserCreationForm, AuthenticationForm, PasswordChangeForm, PasswordResetForm, SetPasswordForm
 from django import forms
 
-from .models import Location, User
+from .models import Booth, Location, User
 
 class CustomUserCreationForm(UserCreationForm):
     """
@@ -81,4 +81,29 @@ class LocationForm(forms.ModelForm):
         widgets = {
             'location': forms.TextInput(attrs={'class': 'w-full bg-white border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400'}),
             'site_plan': forms.ClearableFileInput(attrs={'class': 'w-full bg-white border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400'}),
+        }
+
+class BoothForm(forms.ModelForm):
+    class Meta:
+        model = Booth
+        fields = ['title', 'ceiling_height', 'available', 'location', 'service_package']
+        labels = {
+            'title': "Bezeichnung",
+            'ceiling_height': "Deckenhöhe (in m)",
+            'available': "Verfügbar",
+            'location': "Standort",
+            'service_package': "Service-Pakete"
+        }
+        widgets = {
+            'title': forms.TextInput(attrs={'class': 'w-full bg-white border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400'}),
+            'ceiling_height': forms.NumberInput(attrs={
+                'step': '0.01',
+                'class': 'w-full bg-white border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400'}),
+            'available': forms.CheckboxInput(attrs={'class': 'h-5 w-5 text-blue-600 focus:ring-blue-400 border-gray-300 rounded relative top-1.5'}),
+            'location': forms.Select(attrs={
+                'class': 'w-full bg-white border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400'
+            }),
+            'service_package': forms.SelectMultiple(attrs={
+                'class': 'w-full bg-white border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400'
+            })
         }

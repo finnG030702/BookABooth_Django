@@ -5,7 +5,7 @@
 <div class="max-w mx-auto mt-10 p-6 bg-white rounded-lg shadow-md">
     <h2 class="text-xl font-semibold mb-6 text-center">Lageplan {{ object.id }}</h2>
     <p><strong>Name:</strong> {{ object.location }}</p>
-    <p><strong>Grafik: {{ object.site_plan }}</strong></p>
+    <p><strong>Grafik:</strong> {{ object.site_plan }}</p>
     <div class="mb-4">
         <img id="preview" src="{% if view.object and view.object.site_plan %}{{ view.object.site_plan.url }}{% endif %}" alt="Lageplan Preview" class="max-w-xs max-h-64 border rounded-lg">
     </div>

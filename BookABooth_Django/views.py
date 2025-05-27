@@ -3,8 +3,8 @@ from django.urls import reverse_lazy
 from django.views import View
 from django.views.generic import TemplateView, CreateView, ListView, DetailView, UpdateView, DeleteView
 from django.contrib.auth.views import LoginView, PasswordChangeView, PasswordResetView, PasswordResetCompleteView, PasswordResetDoneView, PasswordResetConfirmView
-from .forms import CustomPasswordResetForm, CustomUserCreationForm, CustomUserLoginForm, CustomPasswordChangeForm, CustomPasswordResetConfirmForm, LocationForm
-from .models import Company, System, Location
+from .forms import CustomPasswordResetForm, CustomUserCreationForm, CustomUserLoginForm, CustomPasswordChangeForm, CustomPasswordResetConfirmForm, LocationForm, BoothForm
+from .models import Company, System, Location, Booth
 
 # Create your views here.
 
@@ -103,6 +103,38 @@ class LocationUpdateView(UpdateView):
 class LocationDeleteView(DeleteView):
     model = Location
     success_url = reverse_lazy("location_list")
+
+    def delete(self, request, *args, **kwargs):
+        return super().delete(request, *args, **kwargs)
+    
+class BoothListView(ListView):
+    model = Booth
+    template_name = "adminMenu/booth/booth_list.html"
+    context_object_name = 'booths'
+
+    def booth_table_partial(request):
+        booths = Booth.objects.all()
+        return render(request, "adminMenu/booth/booth_table_body.html", {"booths": booths})
+    
+class BoothCreateView(CreateView):
+    model = Booth
+    form_class = BoothForm
+    template_name = "adminMenu/booth/booth_form.html"
+    success_url = reverse_lazy("booth_list")
+
+class BoothDetailView(DetailView):
+    model = Booth
+    template_name = "adminMenu/booth/booth_detail.html"
+
+class BoothUpdateView(UpdateView):
+    model = Booth
+    form_class = BoothForm
+    template_name = "adminMenu/booth/booth_form.html"
+    success_url = reverse_lazy("booth_list")
+
+class BoothDeleteView(DeleteView):
+    model = Booth
+    success_url = reverse_lazy("booth_list")
 
     def delete(self, request, *args, **kwargs):
         return super().delete(request, *args, **kwargs)

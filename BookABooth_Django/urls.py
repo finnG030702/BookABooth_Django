@@ -9,7 +9,8 @@ from .views import (HomeView,
                     PasswordResetConfirmView, 
                     PasswordResetCompleteView, 
                     SystemToggleView,
-                    LocationListView, LocationCreateView, LocationDetailView, LocationUpdateView, LocationDeleteView, 
+                    LocationListView, LocationCreateView, LocationDetailView, LocationUpdateView, LocationDeleteView,
+                    BoothListView, BoothCreateView, BoothDetailView, BoothUpdateView, BoothDeleteView, 
                     )
 
 urlpatterns = [
@@ -29,4 +30,10 @@ urlpatterns = [
     path("location/<int:pk>/", LocationDetailView.as_view(), name="location_detail"),
     path("location/<int:pk>/edit/", LocationUpdateView.as_view(), name="location_edit"),
     path("location/<int:pk>/delete/", LocationDeleteView.as_view(), name="location_delete"),
+    path("booth/", BoothListView.as_view(), name="booth_list"),
+    path("api/booth_list/", BoothListView.booth_table_partial, name="booth_table_partial"),
+    path("booth/create/", BoothCreateView.as_view(), name="booth_create"),
+    path("booth/<int:pk>/", BoothDetailView.as_view(), name="booth_detail"),
+    path("booth/<int:pk>/edit/", BoothUpdateView.as_view(), name="booth_edit"),
+    path("booth/<int:pk>/delete/", BoothDeleteView.as_view(), name="booth_delete"),
 ]

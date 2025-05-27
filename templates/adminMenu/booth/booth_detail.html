@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="max-w mx-auto mt-10 p-6 bg-white rounded-lg shadow-md">
+    <h2 class="text-xl font-semibold mb-6 text-center">Stand {{ object.id }}</h2>
+    <p><strong>Name:</strong> {{ object.title }}</p>
+    <p><strong>Grafik:</strong> {{ object.ceiling_height }}</p>
+    <p><strong>Verfügbar:</strong> {{ object.available }}</p>
+    <p><strong>Ort:</strong> {{ object.location }}</p>
+    <p><strong>Service-Paket:</strong> {% for package in booth.service_package.all %}
+        {{ package }}{% if not forloop.last %}, {% endif %}
+        {% empty %}
+        -
+        {% endfor %}</p>
+
+    <div class="mt-4">
+        <a href="{% url 'booth_list' %}"
+            class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition">Zurück</a>
+        <a href="{% url 'booth_edit' object.pk %}"
+            class="px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition">Bearbeiten</a>
+    </div>
+</div>
+
+{% endblock %}
