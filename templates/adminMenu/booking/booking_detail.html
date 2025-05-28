@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="max-w mx-auto mt-10 p-6 bg-white rounded-lg shadow-md">
+    <h2 class="text-xl font-semibold mb-6 text-center">Buchung {{ object.id }}</h2>
+    <div class="grid grid-cols-1 gap-2">
+        <p><strong>Eingegangen:</strong> {{ object.received }}</p>
+        <p><strong>Status</strong> {{ object.status }}</p>
+        <p><strong>Unternehmen:</strong> {{ object.company }}</p>
+        <p><strong>Stand:</strong> {{ object.booth }}</p>
+    </div>
+
+    <div class="mt-4">
+        <a href="{% url 'booking_list' %}"
+            class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition">Zurück</a>
+    </div>
+</div>
+
+{% endblock %}

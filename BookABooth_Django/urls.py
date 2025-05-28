@@ -11,7 +11,8 @@ from .views import (HomeView,
                     SystemToggleView,
                     LocationListView, LocationCreateView, LocationDetailView, LocationUpdateView, LocationDeleteView,
                     BoothListView, BoothCreateView, BoothDetailView, BoothUpdateView, BoothDeleteView,
-                    ServicepackageListView, ServicepackageCreateView, ServicepackageDetailView, ServicepackageUpdateView, ServicepackageDeleteView
+                    ServicepackageListView, ServicepackageCreateView, ServicepackageDetailView, ServicepackageUpdateView, ServicepackageDeleteView,
+                    BookingListView, BookingDetailView, BookingDeleteView
                     )
 
 urlpatterns = [
@@ -42,11 +43,16 @@ urlpatterns = [
     path("booth/<int:pk>/", BoothDetailView.as_view(), name="booth_detail"),
     path("booth/<int:pk>/edit/", BoothUpdateView.as_view(), name="booth_edit"),
     path("booth/<int:pk>/delete/", BoothDeleteView.as_view(), name="booth_delete"),
-    
+
     path("service-package/", ServicepackageListView.as_view(), name="servicepackage_list"),
     path("api/service-package_list", ServicepackageListView.servicepackage_table_partial, name="servicepackage_table_partial"),
     path("service-package/create/", ServicepackageCreateView.as_view(), name="servicepackage_create"),
     path("service-package/<int:pk>/", ServicepackageDetailView.as_view(), name="servicepackage_detail"),
     path("service-package/<int:pk>/edit/", ServicepackageUpdateView.as_view(), name="servicepackage_edit"),
     path("service-package/<int:pk>/delete/", ServicepackageDeleteView.as_view(), name="servicepackage_delete"),
+
+    path("booking/", BookingListView.as_view(), name="booking_list"),
+    path("api/booking_list/", BookingListView.booking_table_partial, name="booking_table_partial"),
+    path("booking/<int:pk>/", BookingDetailView.as_view(), name="booking_detail"),
+    path("booking/<int:pk>/delete/", BookingDeleteView.as_view(), name="booking_delete"),
 ]

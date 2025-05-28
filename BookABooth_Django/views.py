@@ -4,7 +4,7 @@ from django.views import View
 from django.views.generic import TemplateView, CreateView, ListView, DetailView, UpdateView, DeleteView
 from django.contrib.auth.views import LoginView, PasswordChangeView, PasswordResetView, PasswordResetCompleteView, PasswordResetDoneView, PasswordResetConfirmView
 from .forms import CustomPasswordResetForm, CustomUserCreationForm, CustomUserLoginForm, CustomPasswordChangeForm, CustomPasswordResetConfirmForm, LocationForm, BoothForm, ServicePackageForm
-from .models import Company, System, Location, Booth, ServicePackage
+from .models import Company, System, Location, Booth, ServicePackage, Booking
 
 # Create your views here.
 
@@ -170,3 +170,20 @@ class ServicepackageDeleteView(DeleteView):
 
     def delete(self, request, *args, **kwargs):
         return super().delete(request, *args, **kwargs)
+    
+class BookingListView(ListView):
+    model = Booking
+    template_name = "adminMenu/booking/booking_list.html"
+    context_object_name = "bookings"
+
+    def booking_table_partial(request):
+        bookings = Booking.objects.all()
+        return render(request, "adminMenu/booking/booking_table_body.html", {'bookings': bookings})
+    
+class BookingDetailView(DetailView):
+    model = Booking
+    template_name = "adminMenu/booking/booking_detail.html"
+
+class BookingDeleteView(DeleteView):
+    model = Booking
+    success_url = reverse_lazy("booking_list")
