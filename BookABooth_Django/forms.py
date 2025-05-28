@@ -1,7 +1,7 @@
 from django.contrib.auth.forms import UserChangeForm, UserCreationForm, AuthenticationForm, PasswordChangeForm, PasswordResetForm, SetPasswordForm
 from django import forms
 
-from .models import Booth, Location, User
+from .models import Booth, Location, User, ServicePackage
 
 class CustomUserCreationForm(UserCreationForm):
     """
@@ -84,6 +84,9 @@ class LocationForm(forms.ModelForm):
         }
 
 class BoothForm(forms.ModelForm):
+    """
+    Form for the Booth-Admin Page. Styling for the fields, custom names for the labels. 
+    """
     class Meta:
         model = Booth
         fields = ['title', 'ceiling_height', 'available', 'location', 'service_package']
@@ -106,4 +109,22 @@ class BoothForm(forms.ModelForm):
             'service_package': forms.SelectMultiple(attrs={
                 'class': 'w-full bg-white border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400'
             })
+        }
+
+class ServicePackageForm(forms.ModelForm):
+    class Meta:
+        model = ServicePackage
+        fields = ['name', 'price', 'description']
+        labels = {
+            'name': "Name",
+            'price': "Preis in EUR",
+            'description': "Beschreibung",
+        }
+        widgets = {
+            'name': forms.TextInput(attrs={'class': 'w-full bg-white border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400'}),
+            'price': forms.NumberInput(attrs={
+                'step': '0.01',
+                'class': 'w-full bg-white border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400',
+            }),
+            'description': forms.TextInput(attrs={'class': 'w-full bg-white border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400'}),
         }

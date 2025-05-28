@@ -3,8 +3,8 @@ from django.urls import reverse_lazy
 from django.views import View
 from django.views.generic import TemplateView, CreateView, ListView, DetailView, UpdateView, DeleteView
 from django.contrib.auth.views import LoginView, PasswordChangeView, PasswordResetView, PasswordResetCompleteView, PasswordResetDoneView, PasswordResetConfirmView
-from .forms import CustomPasswordResetForm, CustomUserCreationForm, CustomUserLoginForm, CustomPasswordChangeForm, CustomPasswordResetConfirmForm, LocationForm, BoothForm
-from .models import Company, System, Location, Booth
+from .forms import CustomPasswordResetForm, CustomUserCreationForm, CustomUserLoginForm, CustomPasswordChangeForm, CustomPasswordResetConfirmForm, LocationForm, BoothForm, ServicePackageForm
+from .models import Company, System, Location, Booth, ServicePackage
 
 # Create your views here.
 
@@ -135,6 +135,38 @@ class BoothUpdateView(UpdateView):
 class BoothDeleteView(DeleteView):
     model = Booth
     success_url = reverse_lazy("booth_list")
+
+    def delete(self, request, *args, **kwargs):
+        return super().delete(request, *args, **kwargs)
+    
+class ServicepackageListView(ListView):
+    model = ServicePackage
+    template_name = "adminMenu/servicepackage/servicepackage_list.html"
+    context_object_name = 'servicepackages'
+
+    def servicepackage_table_partial(request):
+        servicepackages = ServicePackage.objects.all()
+        return render(request, "adminMenu/servicepackage/servicepackage_table_body.html", {"servicepackages": servicepackages})
+    
+class ServicepackageCreateView(CreateView):
+    model = ServicePackage
+    form_class = ServicePackageForm
+    template_name = "adminMenu/servicepackage/servicepackage_form.html"
+    success_url = reverse_lazy("servicepackage_list")
+
+class ServicepackageDetailView(DetailView):
+    model = ServicePackage
+    template_name = "adminMenu/servicepackage/servicepackage_detail.html"
+
+class ServicepackageUpdateView(UpdateView):
+    model = ServicePackage
+    form_class = ServicePackageForm
+    template_name = "adminMenu/servicepackage/servicepackage_form.html"
+    success_url = reverse_lazy("servicepackage_list")
+
+class ServicepackageDeleteView(DeleteView):
+    model = ServicePackage
+    success_url = reverse_lazy("servicepackage_list")
 
     def delete(self, request, *args, **kwargs):
         return super().delete(request, *args, **kwargs)
