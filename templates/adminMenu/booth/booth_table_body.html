@@ -6,10 +6,12 @@
     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ booth.title }}</td>
     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ booth.ceiling_height }}</td>
     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ booth.available }}</td>
-    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ booth.location }}</td>
-    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+    <td class="px-6 py-4 whitespace-nowrap text-sm text-blue-600 hover:underline">
+        <a href="{% url 'location_detail' booth.location.pk %}">{{ booth.location }}</a>
+    </td>
+    <td class="px-6 py-4 whitespace-nowrap text-sm">
         {% for package in booth.service_package.all %}
-            {{ package }}{% if not forloop.last %}, {% endif %}
+            <a href="{% url 'servicepackage_detail' package.pk %}" class="text-blue-600 hover:underline">{{ package }}</a>{% if not forloop.last %}, {% endif %}
         {% empty %}
         -
         {% endfor %}

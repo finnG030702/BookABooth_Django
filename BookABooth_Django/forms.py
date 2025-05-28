@@ -1,7 +1,8 @@
+from re import M
 from django.contrib.auth.forms import UserChangeForm, UserCreationForm, AuthenticationForm, PasswordChangeForm, PasswordResetForm, SetPasswordForm
 from django import forms
 
-from .models import Booth, Location, User, ServicePackage
+from .models import Booth, Location, User, ServicePackage, Company
 
 class CustomUserCreationForm(UserCreationForm):
     """
@@ -128,3 +129,51 @@ class ServicePackageForm(forms.ModelForm):
             }),
             'description': forms.TextInput(attrs={'class': 'w-full bg-white border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400'}),
         }
+
+class CompanyForm(forms.ModelForm):
+    mail = forms.EmailField(
+        required=True,
+        label="E-Mail",
+        widget=forms.EmailInput(attrs={
+            'class': 'w-full bg-white border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400'
+        })
+    )
+
+    class Meta:
+        model = Company
+        fields = ['name', 'billing_address', 'logo', 'description', 'waiting_list', 'exhibitor_list']
+        labels = {
+            'name': "Name",
+            'billing_address': "Rechnungsadresse",
+            'logo': "Logo",
+            'description': "Firmenbeschreibung",
+            'waiting_list': "Auf Warteliste",
+            'exhibitor_list': "Auf Ausstellerliste",
+        }
+        widgets = {
+            'name': forms.TextInput(attrs={'class': 'w-full bg-white border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400'}),
+            'billing_address': forms.TextInput(attrs={'class': 'w-full bg-white border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400'}),
+            'logo': forms.ClearableFileInput(attrs={'class': 'w-full bg-white border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400'}),
+            'description': forms.TextInput(attrs={'class': 'w-full bg-white border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400'}),
+            'waiting_list': forms.CheckboxInput(attrs={'class': 'h-5 w-5 text-blue-600 focus:ring-blue-400 border-gray-300 rounded relative top-1.5'}),
+            'exhibitor_list': forms.CheckboxInput(attrs={'class': 'h-5 w-5 text-blue-600 focus:ring-blue-400 border-gray-300 rounded relative top-1.5'}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if self.instance and self.instance.pk:
+            user_qs = self.instance.employees.all()
+            if user_qs.exists():
+                first_user = user_qs.first()
+                self.fields['mail'].initial = first_user.email
+        
+
+    def save(self, commit=True):
+        company = super().save(commit)
+        user_qs = company.employees.all()
+        if user_qs.exists():
+            first_user = user_qs.first()
+            first_user.email = self.cleaned_data.get('mail')
+            if commit:
+                first_user.save()
+        return company

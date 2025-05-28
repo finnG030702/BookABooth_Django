@@ -12,7 +12,8 @@ from .views import (HomeView,
                     LocationListView, LocationCreateView, LocationDetailView, LocationUpdateView, LocationDeleteView,
                     BoothListView, BoothCreateView, BoothDetailView, BoothUpdateView, BoothDeleteView,
                     ServicepackageListView, ServicepackageCreateView, ServicepackageDetailView, ServicepackageUpdateView, ServicepackageDeleteView,
-                    BookingListView, BookingDetailView, BookingDeleteView
+                    BookingListView, BookingDetailView, BookingDeleteView,
+                    CompanyDetailView, CompanyUpdateView
                     )
 
 urlpatterns = [
@@ -55,4 +56,7 @@ urlpatterns = [
     path("api/booking_list/", BookingListView.booking_table_partial, name="booking_table_partial"),
     path("booking/<int:pk>/", BookingDetailView.as_view(), name="booking_detail"),
     path("booking/<int:pk>/delete/", BookingDeleteView.as_view(), name="booking_delete"),
+
+    path("company/<int:pk>/", CompanyDetailView.as_view(), name="company_detail"),
+    path("company/<int:pk>/edit/", CompanyUpdateView.as_view(), name="company_edit"),
 ]

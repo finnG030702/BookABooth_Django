@@ -5,8 +5,12 @@
     </td>
     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ booking.received }}</td>
     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ booking.status }}</td>
-    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ booking.company }}</td>
-    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ booking.booth }}</td>
+    <td class="px-6 py-4 whitespace-nowrap text-sm text-blue-600 hover:underline">
+        <a href="{% url 'company_detail' booking.company.pk %}">{{ booking.company }}</a>
+    </td>
+    <td class="px-6 py-4 whitespace-nowrap text-sm text-blue-600 hover:underline">
+        <a href="{% url 'booth_detail' booking.booth.pk %}">{{ booking.booth }}</a>
+    </td>
     <td class="px-6 py-4 text-right space-x-2">
         <a href="{% url 'booking_detail' booking.pk %}" class="text-white hover:bg-blue-600 rounded-lg px-4 py-2 bg-blue-500">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"

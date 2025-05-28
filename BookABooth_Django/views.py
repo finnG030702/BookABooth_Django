@@ -3,7 +3,7 @@ from django.urls import reverse_lazy
 from django.views import View
 from django.views.generic import TemplateView, CreateView, ListView, DetailView, UpdateView, DeleteView
 from django.contrib.auth.views import LoginView, PasswordChangeView, PasswordResetView, PasswordResetCompleteView, PasswordResetDoneView, PasswordResetConfirmView
-from .forms import CustomPasswordResetForm, CustomUserCreationForm, CustomUserLoginForm, CustomPasswordChangeForm, CustomPasswordResetConfirmForm, LocationForm, BoothForm, ServicePackageForm
+from .forms import CompanyForm, CustomPasswordResetForm, CustomUserCreationForm, CustomUserLoginForm, CustomPasswordChangeForm, CustomPasswordResetConfirmForm, LocationForm, BoothForm, ServicePackageForm
 from .models import Company, System, Location, Booth, ServicePackage, Booking
 
 # Create your views here.
@@ -187,3 +187,15 @@ class BookingDetailView(DetailView):
 class BookingDeleteView(DeleteView):
     model = Booking
     success_url = reverse_lazy("booking_list")
+
+class CompanyDetailView(DetailView):
+    model = Company
+    template_name = "adminMenu/company/company_detail.html"
+
+class CompanyUpdateView(UpdateView):
+    model = Company
+    form_class = CompanyForm
+    template_name = "adminMenu/company/company_form.html"
+
+    def get_success_url(self):
+        return reverse_lazy('company_detail', kwargs={'pk': self.object.pk})
