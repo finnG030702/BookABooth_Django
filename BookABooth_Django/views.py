@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import get_object_or_404, render
 from django.urls import reverse_lazy
 from django.views import View
 from django.views.generic import TemplateView, CreateView, ListView, DetailView, UpdateView, DeleteView
@@ -199,3 +199,29 @@ class CompanyUpdateView(UpdateView):
 
     def get_success_url(self):
         return reverse_lazy('company_detail', kwargs={'pk': self.object.pk})
+    
+class WaitingListView(ListView):
+    model = Company
+    template_name = "adminMenu/waitingList/waitingList.html"
+    context_object_name = "companies"
+
+    def get_queryset(self):
+        return Company.objects.order_by('-waiting_list', 'id')
+
+    def waitinglist_table_partial(request):
+        companies = Company.objects.order_by('-waiting_list', 'id')
+        return render(request, "adminMenu/waitingList/waitinglist_table_body.html", {'companies': companies})
+    
+    def add_to_waitinglist(request, company_id):
+        company = get_object_or_404(Company, id=company_id)
+        company.waiting_list = True
+        company.save()
+        companies = Company.objects.order_by('-waiting_list', 'id')
+        return render(request, "adminMenu/waitingList/waitinglist_table_body.html", {"companies": companies})
+    
+    def remove_from_waitinglist(request, company_id):
+        company = get_object_or_404(Company, id=company_id)
+        company.waiting_list = False
+        company.save()
+        companies = Company.objects.order_by('-waiting_list', 'id')
+        return render(request, "adminMenu/waitingList/waitinglist_table_body.html", {"companies": companies})

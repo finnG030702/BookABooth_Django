@@ -13,7 +13,8 @@ from .views import (HomeView,
                     BoothListView, BoothCreateView, BoothDetailView, BoothUpdateView, BoothDeleteView,
                     ServicepackageListView, ServicepackageCreateView, ServicepackageDetailView, ServicepackageUpdateView, ServicepackageDeleteView,
                     BookingListView, BookingDetailView, BookingDeleteView,
-                    CompanyDetailView, CompanyUpdateView
+                    CompanyDetailView, CompanyUpdateView, 
+                    WaitingListView,
                     )
 
 urlpatterns = [
@@ -59,4 +60,9 @@ urlpatterns = [
 
     path("company/<int:pk>/", CompanyDetailView.as_view(), name="company_detail"),
     path("company/<int:pk>/edit/", CompanyUpdateView.as_view(), name="company_edit"),
+
+    path("waitinglist/", WaitingListView.as_view(), name="waitingList"),
+    path("api/waitinglist/", WaitingListView.waitinglist_table_partial, name="waitinglist_partial"),
+    path("waitinglist/add/<int:company_id>", WaitingListView.add_to_waitinglist, name="add_to_waitinglist"),
+    path("waitinglist/remove/<int:company_id>", WaitingListView.remove_from_waitinglist, name="remove_from_waitinglist"),
 ]
