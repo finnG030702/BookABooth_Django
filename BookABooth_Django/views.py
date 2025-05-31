@@ -1,12 +1,27 @@
-from django.shortcuts import get_object_or_404, render
+from django.contrib.auth import get_user_model
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.shortcuts import get_object_or_404, render, redirect
 from django.urls import reverse_lazy
 from django.views import View
+from django.views.decorators.http import require_POST
 from django.views.generic import TemplateView, CreateView, ListView, DetailView, UpdateView, DeleteView
 from django.contrib.auth.views import LoginView, PasswordChangeView, PasswordResetView, PasswordResetCompleteView, PasswordResetDoneView, PasswordResetConfirmView
 from .forms import CompanyForm, CustomPasswordResetForm, CustomUserCreationForm, CustomUserLoginForm, CustomPasswordChangeForm, CustomPasswordResetConfirmForm, LocationForm, BoothForm, ServicePackageForm
-from .models import Company, System, Location, Booth, ServicePackage, Booking
+from .models import Company, System, Location, Booth, ServicePackage, Booking, TermsUpdateLog
+
+User = get_user_model()
+
 
 # Create your views here.
+
+@login_required
+@require_POST
+def accept_privacy_policy(request):
+    user = request.user
+    user.privacy_policy_accepted = True
+    user.save()
+    return redirect("home")
 
 class HomeView(TemplateView):
     template_name = "home.html"
@@ -225,3 +240,18 @@ class WaitingListView(ListView):
         company.save()
         companies = Company.objects.order_by('-waiting_list', 'id')
         return render(request, "adminMenu/waitingList/waitinglist_table_body.html", {"companies": companies})
+
+class TermsResetView(LoginRequiredMixin, UserPassesTestMixin, View): # TODO: Alle Views nur für Admin machen
+    template_name = "adminMenu/privacyPolicy/privacyPolicy.html"
+
+    def test_func(self):
+        return self.request.user.is_superuser
+
+    def get(self, request):
+        update_logs = TermsUpdateLog.objects.order_by('-updated_at')
+        return render(request, self.template_name, {"logs": update_logs})
+
+    def post(self, request):
+        User.objects.update(privacy_policy_accepted=False)
+        TermsUpdateLog.objects.create()
+        return redirect("privacyPolicy")

@@ -92,7 +92,7 @@ class User(AbstractUser):
     company (Company): The company the user works for. 
     """
     phone = models.CharField(max_length=20, blank=True, null=True)
-    privacy_policy_accepted = models.BooleanField(default=False)
+    privacy_policy_accepted = models.BooleanField(default=False, blank=False, null=False)
     company = models.ForeignKey('Company', on_delete=models.SET_NULL, null=True, blank=True, related_name='employees')
 
     def __str__(self):
@@ -127,3 +127,14 @@ class ServicePackage(models.Model):
 
     def __str__(self):
         return self.name
+
+class TermsUpdateLog(models.Model):
+    """
+    Tracks when the terms of service are updated.
+
+    updated_at (datetime): When the terms were last updated.
+    """
+    updated_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Aktualisiert am {self.updated_at.strftime('%d.%m.%Y %H:%M:%S')}"

@@ -1,20 +1,21 @@
 from django.urls import path
-
+from . import views
 from .views import (HomeView,
-                    CustomPasswordChangeView, 
-                    SignUpView, 
-                    LoginView, 
-                    PasswortResetView, 
-                    PasswordResetDoneView, 
-                    PasswordResetConfirmView, 
-                    PasswordResetCompleteView, 
+                    CustomPasswordChangeView,
+                    SignUpView,
+                    LoginView,
+                    PasswortResetView,
+                    PasswordResetDoneView,
+                    PasswordResetConfirmView,
+                    PasswordResetCompleteView,
                     SystemToggleView,
                     LocationListView, LocationCreateView, LocationDetailView, LocationUpdateView, LocationDeleteView,
                     BoothListView, BoothCreateView, BoothDetailView, BoothUpdateView, BoothDeleteView,
-                    ServicepackageListView, ServicepackageCreateView, ServicepackageDetailView, ServicepackageUpdateView, ServicepackageDeleteView,
+                    ServicepackageListView, ServicepackageCreateView, ServicepackageDetailView,
+                    ServicepackageUpdateView, ServicepackageDeleteView,
                     BookingListView, BookingDetailView, BookingDeleteView,
-                    CompanyDetailView, CompanyUpdateView, 
-                    WaitingListView,
+                    CompanyDetailView, CompanyUpdateView,
+                    WaitingListView, TermsResetView,
                     )
 
 urlpatterns = [
@@ -65,4 +66,7 @@ urlpatterns = [
     path("api/waitinglist/", WaitingListView.waitinglist_table_partial, name="waitinglist_partial"),
     path("waitinglist/add/<int:company_id>", WaitingListView.add_to_waitinglist, name="add_to_waitinglist"),
     path("waitinglist/remove/<int:company_id>", WaitingListView.remove_from_waitinglist, name="remove_from_waitinglist"),
+
+    path("accept-privacy-policy/", views.accept_privacy_policy, name="accept_privacy_policy"),
+    path("privacypolicy/", TermsResetView.as_view(), name="privacyPolicy"),
 ]

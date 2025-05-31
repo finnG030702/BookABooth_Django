@@ -1,6 +1,7 @@
 from re import M
 from django.contrib.auth.forms import UserChangeForm, UserCreationForm, AuthenticationForm, PasswordChangeForm, PasswordResetForm, SetPasswordForm
 from django import forms
+from django.utils.safestring import mark_safe
 
 from .models import Booth, Location, User, ServicePackage, Company
 
@@ -12,10 +13,18 @@ class CustomUserCreationForm(UserCreationForm):
         max_length=255,
         label="Firmenname"
     )
+    privacy_policy_accepted = forms.BooleanField(
+        label=mark_safe('Ich habe die <a href="https://www.jade-hs.de/datenschutz" target="_blank" rel="noopener noreferrer" class="text-blue-500 hover:underline">Datenschutzerklärung</a> gelesen und akzeptiert'),
+        required=True,
+        widget = forms.CheckboxInput(attrs={
+            'class': 'h-4 w-4 text-blue-600 focus:ring-blue-400 border-gray-300 rounded'
+        })
+    )
 
     class Meta:
         model = User
-        fields = ('username', 'company_name', 'email')
+        fields = ('username', 'company_name', 'email', 'password1', 'password2')
+
 
     def __init__(self, *args, **kwargs):
         super(CustomUserCreationForm, self).__init__(*args, **kwargs)
@@ -23,6 +32,13 @@ class CustomUserCreationForm(UserCreationForm):
             field.widget.attrs.update({
                 'class': 'w-full bg-white border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400',
             })
+
+    def save(self, commit=True):
+        user = super().save(commit=False)
+        user.privacy_policy_accepted = self.cleaned_data['privacy_policy_accepted']
+        if commit:
+            user.save()
+        return user
 
 class CustomUserChangeForm(UserChangeForm):
     """

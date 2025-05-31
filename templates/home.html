@@ -4,6 +4,12 @@
 
 {% if user.is_authenticated and not user.is_staff %}
 
+    {% if not user.privacy_policy_accepted %}
+
+        {% include "components/privacy_policy_check.html" %}
+
+    {% endif %}
+
 <div class="container mx-auto">
     <section class="flex flex-col items-center justify-center h-16">
         <h1 class="text-5xl">Wilkommen {{ user }}!</h1>
