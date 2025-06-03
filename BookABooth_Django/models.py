@@ -64,6 +64,7 @@ class Company(models.Model):
     billing_address = models.CharField(max_length=255, blank=True, null=True)
     logo = models.ImageField(upload_to='company_logos/', blank=True, null=True)
     description = models.CharField(max_length=1024, blank=True, null=True)
+    comment = models.CharField(max_length=1024, blank=True, null=True)
     waiting_list = models.BooleanField(default=False)
     exhibitor_list = models.BooleanField(default=False)
 
@@ -91,7 +92,7 @@ class User(AbstractUser):
     privacy_policy_accepted (boolean): Will be set True when the user agrees to the privacy policy.
     company (Company): The company the user works for. 
     """
-    phone = models.CharField(max_length=20, blank=True, null=True)
+    phone = models.TextField(max_length=20, blank=True, null=True)
     privacy_policy_accepted = models.BooleanField(default=False, blank=False, null=False)
     company = models.ForeignKey('Company', on_delete=models.SET_NULL, null=True, blank=True, related_name='employees')
 

@@ -1,0 +1,73 @@
+<div class="p-5 border border-b-0 border-gray-200">
+
+    {% for field in company_data_form %}
+        {% if field.name != 'logo' and field.name != 'exhibitor_list' %}
+            <div class="mb-4">
+                <label for="{{ field.id_for_label }}" class="block text-sm font-medium text-gray-700">
+                    {{ field.label }}
+                </label>
+                {{ field }}
+                {% if field.help_text %}
+                    <p class="text-sm text-gray-500">{{ field.help_text }}</p>
+                {% endif %}
+                {% for error in field.errors %}
+                    <p class="text-sm text-red-600">{{ error }}</p>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endfor %}
+
+    <!-- Logo-Feld -->
+        <div class="mb-4 space-y-4">
+            <label for="id_logo" class="cursor-pointer inline-block px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
+                {{ company_data_form.logo.label }} hochladen
+            </label>
+            {{ company_data_form.logo }}
+            <span id="file-name" class="ml-2 text-gray-700 italic"></span>
+
+            <div>
+                <img id="preview" src="{% if company_data_form.instance.logo and company_data_form.instance.logo.name %}{{ company_data_form.instance.logo.url }}{% endif %}" alt="Logo Preview" class="max-w-xs max-h-64 border rounded-lg">
+            </div>
+        </div>
+
+        <!-- Ausstellerliste-Check -->
+        <div class="mb-4">
+        <label for="{{ company_data_form.exhibitor_list.id_for_label }}" class="block text-sm font-medium text-gray-700">
+            {{ company_data_form.exhibitor_list.label }}
+        </label>
+        {{ company_data_form.exhibitor_list }}
+        <span>Hiermit bestätige ich, dass mein Unternehmen öffentlich auf der Ausstellerliste und der Standauswahl während des
+            Buchungsprozesses erscheinen darf. Dritte sehen dadurch den Firmennamen, die Firmenbeschreibung, das Logo und den
+            gebuchten Stand. Wurde noch keine Buchung getätigt, oder eine bestehende Buchung storniert, können diese Informationen
+            nicht eingesehen werden. Eine Standbuchung kann auch ohne die <i>Freigabe Ausstellerliste</i> erfolgen.</span>
+        </div>
+</div>
+
+<style>
+    #id_logo {
+        opacity: 0;
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        z-index: -1;
+    }
+</style>
+
+<script>
+    const input = document.getElementById('id_logo');
+    const preview = document.getElementById('preview');
+    const fileNameSpan = document.getElementById('file-name');
+
+    input.addEventListener('change', function(event) {
+        const [file] = input.files;
+
+        if (file) {
+            preview.src = URL.createObjectURL(file);
+            fileNameSpan.textContent = file.name;
+        } else {
+            preview.src = '';
+            fileNameSpan.textContent = '';
+        }
+    });
+</script>

@@ -1,13 +1,16 @@
-from django.contrib.auth import get_user_model
+from django.contrib import messages
+from django.contrib.auth import get_user_model, logout, authenticate
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.shortcuts import get_object_or_404, render, redirect
-from django.urls import reverse_lazy
+from django.urls import reverse_lazy, reverse
+from django.utils.safestring import mark_safe
 from django.views import View
 from django.views.decorators.http import require_POST
+from django.http import HttpResponse, HttpResponseBadRequest
 from django.views.generic import TemplateView, CreateView, ListView, DetailView, UpdateView, DeleteView
 from django.contrib.auth.views import LoginView, PasswordChangeView, PasswordResetView, PasswordResetCompleteView, PasswordResetDoneView, PasswordResetConfirmView
-from .forms import CompanyForm, CustomPasswordResetForm, CustomUserCreationForm, CustomUserLoginForm, CustomPasswordChangeForm, CustomPasswordResetConfirmForm, LocationForm, BoothForm, ServicePackageForm
+from .forms import CompanyForm, CustomPasswordResetForm, CustomUserChangeForm, CustomUserCreationForm, CustomUserLoginForm, CustomPasswordChangeForm, CustomPasswordResetConfirmForm, LocationForm, BoothForm, ServicePackageForm, CustomCompanyChangeForm
 from .models import Company, System, Location, Booth, ServicePackage, Booking, TermsUpdateLog
 
 User = get_user_model()
@@ -73,11 +76,14 @@ class PasswordResetConfirmView(PasswordResetConfirmView):
 class PasswordResetCompleteView(PasswordResetCompleteView):
     template_name = "registration/password_reset_complete.html"
 
-class SystemToggleView(View):
+class SystemToggleView(LoginRequiredMixin, UserPassesTestMixin, View):
     """
     View for the SystemToggle.html. Changes the enabled-Attribute of system in its response.
     """
     template_name = "adminMenu/system/system_toggle.html"
+
+    def test_func(self):
+        return self.request.user.is_superuser
 
     def get(self, request):
         system = System.objects.first()
@@ -90,135 +96,198 @@ class SystemToggleView(View):
         system.save()
         return render(request, "adminMenu/system/_system_status.html", {"system": system})
     
-class LocationListView(ListView):
+class LocationListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
     model = Location
     template_name = "adminMenu/location/location_list.html"
     context_object_name = 'locations'
+
+    def test_func(self):
+        return self.request.user.is_superuser
 
     def location_table_partial(request):
         locations = Location.objects.all()
         return render(request, "adminMenu/location/location_table_body.html", {"locations": locations})
 
-class LocationCreateView(CreateView):
+class LocationCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     model = Location
     form_class = LocationForm
     template_name = "adminMenu/location/location_form.html"
     success_url = reverse_lazy("location_list")
 
-class LocationDetailView(DetailView):
+    def test_func(self):
+        return self.request.user.is_superuser
+
+class LocationDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
     model = Location
     template_name = "adminMenu/location/location_detail.html"
 
-class LocationUpdateView(UpdateView):
+    def test_func(self):
+        return self.request.user.is_superuser
+
+class LocationUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Location
     form_class = LocationForm
     template_name = "adminMenu/location/location_form.html"
     success_url = reverse_lazy("location_list")
 
-class LocationDeleteView(DeleteView):
+    def test_func(self):
+        return self.request.user.is_superuser
+
+class LocationDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = Location
     success_url = reverse_lazy("location_list")
+
+    def test_func(self):
+        return self.request.user.is_superuser
 
     def delete(self, request, *args, **kwargs):
         return super().delete(request, *args, **kwargs)
     
-class BoothListView(ListView):
+class BoothListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
     model = Booth
     template_name = "adminMenu/booth/booth_list.html"
     context_object_name = 'booths'
+
+    def test_func(self):
+        return self.request.user.is_superuser
 
     def booth_table_partial(request):
         booths = Booth.objects.all()
         return render(request, "adminMenu/booth/booth_table_body.html", {"booths": booths})
     
-class BoothCreateView(CreateView):
+class BoothCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     model = Booth
     form_class = BoothForm
     template_name = "adminMenu/booth/booth_form.html"
     success_url = reverse_lazy("booth_list")
 
-class BoothDetailView(DetailView):
+    def test_func(self):
+        return self.request.user.is_superuser
+
+class BoothDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
     model = Booth
     template_name = "adminMenu/booth/booth_detail.html"
 
-class BoothUpdateView(UpdateView):
+    def test_func(self):
+        return self.request.user.is_superuser
+
+class BoothUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Booth
     form_class = BoothForm
     template_name = "adminMenu/booth/booth_form.html"
     success_url = reverse_lazy("booth_list")
 
-class BoothDeleteView(DeleteView):
+    def test_func(self):
+        return self.request.user.is_superuser
+
+class BoothDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = Booth
     success_url = reverse_lazy("booth_list")
+
+    def test_func(self):
+        return self.request.user.is_superuser
 
     def delete(self, request, *args, **kwargs):
         return super().delete(request, *args, **kwargs)
     
-class ServicepackageListView(ListView):
+class ServicepackageListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
     model = ServicePackage
     template_name = "adminMenu/servicepackage/servicepackage_list.html"
     context_object_name = 'servicepackages'
+
+    def test_func(self):
+        return self.request.user.is_superuser
 
     def servicepackage_table_partial(request):
         servicepackages = ServicePackage.objects.all()
         return render(request, "adminMenu/servicepackage/servicepackage_table_body.html", {"servicepackages": servicepackages})
     
-class ServicepackageCreateView(CreateView):
+class ServicepackageCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     model = ServicePackage
     form_class = ServicePackageForm
     template_name = "adminMenu/servicepackage/servicepackage_form.html"
     success_url = reverse_lazy("servicepackage_list")
 
-class ServicepackageDetailView(DetailView):
+    def test_func(self):
+        return self.request.user.is_superuser
+
+class ServicepackageDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
     model = ServicePackage
     template_name = "adminMenu/servicepackage/servicepackage_detail.html"
 
-class ServicepackageUpdateView(UpdateView):
+    def test_func(self):
+        return self.request.user.is_superuser
+
+class ServicepackageUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = ServicePackage
     form_class = ServicePackageForm
     template_name = "adminMenu/servicepackage/servicepackage_form.html"
     success_url = reverse_lazy("servicepackage_list")
 
-class ServicepackageDeleteView(DeleteView):
+    def test_func(self):
+        return self.request.user.is_superuser
+
+class ServicepackageDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = ServicePackage
     success_url = reverse_lazy("servicepackage_list")
+
+    def test_func(self):
+        return self.request.user.is_superuser
 
     def delete(self, request, *args, **kwargs):
         return super().delete(request, *args, **kwargs)
     
-class BookingListView(ListView):
+class BookingListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
     model = Booking
     template_name = "adminMenu/booking/booking_list.html"
     context_object_name = "bookings"
+
+    def test_func(self):
+        return self.request.user.is_superuser
 
     def booking_table_partial(request):
         bookings = Booking.objects.all()
         return render(request, "adminMenu/booking/booking_table_body.html", {'bookings': bookings})
     
-class BookingDetailView(DetailView):
+class BookingDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
     model = Booking
     template_name = "adminMenu/booking/booking_detail.html"
 
-class BookingDeleteView(DeleteView):
+    def test_func(self):
+        return self.request.user.is_superuser
+
+class BookingDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = Booking
     success_url = reverse_lazy("booking_list")
 
-class CompanyDetailView(DetailView):
+    def test_func(self):
+        return self.request.user.is_superuser
+
+class CompanyDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
     model = Company
     template_name = "adminMenu/company/company_detail.html"
 
-class CompanyUpdateView(UpdateView):
+    def test_func(self):
+        return self.request.user.is_superuser
+
+class CompanyUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Company
     form_class = CompanyForm
     template_name = "adminMenu/company/company_form.html"
 
+    def test_func(self):
+        return self.request.user.is_superuser
+
     def get_success_url(self):
         return reverse_lazy('company_detail', kwargs={'pk': self.object.pk})
     
-class WaitingListView(ListView):
+class WaitingListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
     model = Company
     template_name = "adminMenu/waitingList/waitingList.html"
     context_object_name = "companies"
+
+    def test_func(self):
+        return self.request.user.is_superuser
 
     def get_queryset(self):
         return Company.objects.order_by('-waiting_list', 'id')
@@ -241,7 +310,7 @@ class WaitingListView(ListView):
         companies = Company.objects.order_by('-waiting_list', 'id')
         return render(request, "adminMenu/waitingList/waitinglist_table_body.html", {"companies": companies})
 
-class TermsResetView(LoginRequiredMixin, UserPassesTestMixin, View): # TODO: Alle Views nur für Admin machen
+class TermsResetView(LoginRequiredMixin, UserPassesTestMixin, View):
     template_name = "adminMenu/privacyPolicy/privacyPolicy.html"
 
     def test_func(self):
@@ -255,3 +324,165 @@ class TermsResetView(LoginRequiredMixin, UserPassesTestMixin, View): # TODO: All
         User.objects.update(privacy_policy_accepted=False)
         TermsUpdateLog.objects.create()
         return redirect("privacyPolicy")
+    
+class ProfileView(LoginRequiredMixin, View):
+
+    def _get_company(self, user):
+        """
+        Gets the company to the corresponding user
+        """
+        return getattr(user, 'company', None)
+    
+    def _has_booking(self, company, status):
+        if not company:
+            return False
+        return Booking.objects.filter(company=company, status__in=status).exists()
+    
+    def _is_only_one_admin(self):
+        return User.objects.filter(is_superuser=True, is_active=True).count() == 1
+    
+    def _handle_redirect(self, request, url_name):
+        """
+        Returns HTMX-Redirect for HTMX-Requests. Otherwise, default Django-Redirect
+        """
+        url = reverse(url_name)
+        if request.htmx:
+            response = HttpResponse()
+            response['HX-Redirect'] = url
+            return response
+        else:
+            return redirect(url)
+    
+    def dispatch(self, request, *args, **kwargs):
+        action = kwargs.get('action')
+        if action == 'modal_cancel_booking' and request.method == 'GET':
+            return self.get_modal_cancel_booking(request)
+        elif action == 'modal_delete_account' and request.method == 'GET':
+            return self.get_modal_delete_account(request)
+        return super().dispatch(request, *args, **kwargs)
+
+    def get(self, request):
+        user = request.user
+        company = self._get_company(user)
+
+        context = {
+            "user_data_form": CustomUserChangeForm(instance=user),
+            "company_data_form": CustomCompanyChangeForm(instance=company) if company else None,
+            "has_confirmed_booking": self._has_booking(company, ['confirmed']),
+            "has_canceled_booking": self._has_booking(company, ['canceled']),
+            "is_admin": user.is_superuser,
+            "only_one_admin": self._is_only_one_admin() if user.is_superuser else False,
+        }
+        return render(request, "settings/profile.html", context)
+    
+    def post(self, request, *args, **kwargs):
+        # Unterschied, welcher Button im Profil genutzt wird
+        if "cancel_booking" in request.POST:
+            return self.cancel_booking(request)
+        elif "leave_waiting_list" in request.POST:
+            return self.leave_waiting_list(request)
+        elif "delete_account" in request.POST:
+            return self.delete_account(request)
+        else:
+            return self.save(request)
+    
+    def save(self, request):
+        user = request.user
+        company = self._get_company(user)
+
+        user_data = CustomUserChangeForm(request.POST, instance=user)
+        company_data = CustomCompanyChangeForm(request.POST, request.FILES, instance=user.company) if company else None
+
+        if user_data.is_valid() and (company_data is None or company_data.is_valid()):
+            user_data.save()
+            messages.success(request, mark_safe(
+                f"<strong>Die Einstellungen wurden gespeichert.</strong> Weiter geht es auf der "
+                f"<a href='{reverse('home')}' class='text-blue-600 hover:underline'>Startseite</a>."
+                )
+            )
+            if company_data:
+                company_data.save()
+            return self._handle_redirect(request, 'profile')
+        
+        context = {
+            "user_data_form": user_data,
+            "company_data_form": company_data
+        }
+        return render(request, "settings/profile.html", context)
+    
+    def cancel_booking(self, request, *args, **kwargs):
+        user = request.user
+        company = self._get_company(user)
+        if not company:
+            messages.error(request, "Kein Unternehmen gefunden")
+            return self._handle_redirect(request, 'profile')
+        
+        try:
+            booking = Booking.objects.get(company=company, status='confirmed')
+        except Booking.DoesNotExist:
+            messages.error(request, "Keine bestätigte Buchung zum Stornieren gefunden.")
+            return self._handle_redirect(request, 'profile')
+        
+        booking.status = "canceled"
+        booking.cancellationfee = 100
+        booking.save()
+
+        messages.success(request, "Ihre Buchung wurde storniert.")
+        return self._handle_redirect(request, 'profile')
+    
+    def leave_waiting_list(self, request, *args, **kwargs):
+        user = request.user
+        company = self._get_company(user)
+
+        if not company:
+            messages.error(request, "Kein Unternehmen gefunden.")
+            return self._handle_redirect(request, 'profile')
+        
+        if not company.waiting_list:
+            messages.info(request, "Sie stehen nicht auf der Warteliste.")
+            return self._handle_redirect(request, 'profile')
+        
+        company.waiting_list = False
+        company.save()
+        messages.success(request, "Sie wurden von der Warteliste entfernt.")
+        return self._handle_redirect(request, 'profile')
+    
+    def delete_account(self, request, *args, **kwargs):
+        user = request.user
+        company = self._get_company(user)
+
+        # Passwort auslesen und prüfen
+        password = request.POST.get("password")
+        if not password or not authenticate(username=user.username, password=password):
+            messages.error(request, "Passwort ist falsch oder fehlt.")
+            return self._handle_redirect(request, 'profile')
+
+        # Prüfen, ob der User ein Admin ist und ob mehrere Admins im System sind
+        if user.is_superuser:
+            if self._is_only_one_admin():
+                messages.error(request, "Der einzige Admin kann nicht gelöscht werden.")
+                return self._handle_redirect(request, 'profile')
+            
+        # Prüfen, ob Booking existiert
+        has_booking = self._has_booking(company, ['confirmed', 'canceled'])
+        if has_booking:
+            messages.error(request, "Konto kann nicht gelöscht werden, solange eine Buchung besteht.")
+            return self._handle_redirect(request, 'profile')
+        
+        # Wenn keine Buchung existiert, User löschen
+        if company:
+            company.delete()
+        user.delete()
+        logout(request)
+        messages.success(request, "Ihr Konto wurde erfolgreich gelöscht.")
+        return self._handle_redirect(request, 'home')
+    
+    def get_modal_cancel_booking(self, request, *args, **kwargs):
+        if request.htmx:
+            return render(request, "settings/cancel_booking.html")
+        return HttpResponseBadRequest("Invalid request")
+    
+    def get_modal_delete_account(self, request, *args, **kwargs):
+        if request.htmx:
+            return render(request, "settings/delete_account.html")
+        return HttpResponseBadRequest("Invalid request")

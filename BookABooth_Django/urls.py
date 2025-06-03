@@ -16,6 +16,7 @@ from .views import (HomeView,
                     BookingListView, BookingDetailView, BookingDeleteView,
                     CompanyDetailView, CompanyUpdateView,
                     WaitingListView, TermsResetView,
+                    ProfileView
                     )
 
 urlpatterns = [
@@ -29,6 +30,10 @@ urlpatterns = [
     path("accounts/password_reset/done/", PasswordResetDoneView.as_view(), name="password_reset_done"),
     path("accounts/reset/<uidb64>/<token>/", PasswordResetConfirmView.as_view(), name="password_reset_confirm"),
     path("accounts/reset/done/", PasswordResetCompleteView.as_view(), name="password_reset_complete"),
+
+    path("accounts/settings/", ProfileView.as_view(), name="profile"),
+    path("accounts/settings/cancel-booking/", ProfileView.as_view(), {'action': 'modal_cancel_booking'}, name="modal_cancel_booking"),
+    path("accounts/settings/delete-account/", ProfileView.as_view(), {'action': 'modal_delete_account'}, name="modal_delete_account"),
 
     path("system/", SystemToggleView.as_view(), name="system"),
     path("system/toggle/", SystemToggleView.as_view(), name="system_toggle"),
@@ -68,5 +73,5 @@ urlpatterns = [
     path("waitinglist/remove/<int:company_id>", WaitingListView.remove_from_waitinglist, name="remove_from_waitinglist"),
 
     path("accept-privacy-policy/", views.accept_privacy_policy, name="accept_privacy_policy"),
-    path("privacypolicy/", TermsResetView.as_view(), name="privacyPolicy"),
+    path("privacy-policy/", TermsResetView.as_view(), name="privacyPolicy"),
 ]
