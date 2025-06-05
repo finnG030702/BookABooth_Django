@@ -25,8 +25,10 @@
 
         <h1 class="text-6xl font-light mb-4">Willkommen {{ user }}!</h1>
         <p class="font-light mt-2 text-xl">Hier können Sie Ihren Stand für den Karrieretag buchen.</p>
-        <br></br>
-        <h1 class="text-2xl font-semibold">Checkliste und Status:</h1>
+        <br>
+
+        {% include "components/user_checklist.html" %}
+
     </div>
 
     {% elif user.is_authenticated and user.is_staff %}

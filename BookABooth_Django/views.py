@@ -10,8 +10,9 @@ from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes
 from django.views import View
 from django.views.decorators.http import require_POST
-from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseRedirect, JsonResponse
 from django.core.mail import send_mail
+from types import SimpleNamespace
 from django.views.generic import TemplateView, CreateView, ListView, DetailView, UpdateView, DeleteView
 from django.contrib.auth.views import LoginView, PasswordChangeView, PasswordResetView, PasswordResetCompleteView, PasswordResetDoneView, PasswordResetConfirmView
 from .forms import CompanyForm, CustomPasswordResetForm, CustomUserChangeForm, CustomUserCreationForm, CustomUserLoginForm, CustomPasswordChangeForm, CustomPasswordResetConfirmForm, LocationForm, BoothForm, ServicePackageForm, CustomCompanyChangeForm
@@ -30,8 +31,53 @@ def accept_privacy_policy(request):
     user.save()
     return redirect("home")
 
+@login_required
+@require_POST
+def add_to_waiting_list(request):
+    user = request.user
+    if hasattr(user, "company"):
+        company = user.company
+        company.waiting_list = True
+        company.save()
+        return JsonResponse({"success": True})
+    return JsonResponse({"success": False, "error": "Kein Unternehmen gefunden"}, status=400)
+
 class HomeView(TemplateView):
     template_name = "home.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        system = System.objects.get(id=1)
+        context["system"] = system or System(enabled=False) # Check if booking is enabled / disabled by default
+
+        user = self.request.user
+
+        if user.is_authenticated and not user.is_staff:
+            company = getattr(user, "company", None)
+
+
+            checklist = {
+                "registered": True, # Account is created
+                "verified": user.is_active, # E-Mail verification completed
+                "phone": bool(user.phone),
+                "address": bool(company and company.billing_address),
+                "logo": bool(company and company.logo),
+                "description": bool(company and company.description),
+                "waitingList": bool(company and company.waiting_list),
+                "allBoothsOccupied": not Booth.objects.filter(available=True).exists(),
+            }
+
+            booking_status = None
+            if company:
+                latest_booking = company.companies.order_by('-received').first()
+                if latest_booking:
+                    booking_status = latest_booking.status.upper()
+            
+            checklist["bookingStatus"] = booking_status
+            context["checklist"] = SimpleNamespace(**checklist)
+
+        return context
 
 class SignUpView(CreateView):
     """

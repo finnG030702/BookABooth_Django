@@ -91,7 +91,7 @@ class CustomCompanyChangeForm(forms.ModelForm):
             "billing_address": forms.Textarea(attrs={
                 'class': INPUT_STYLE,
                 'rows': 2,
-                'placeholder': "Firmenname // Straße Hausnummer // PLZ Ort"
+                'placeholder': "Straße Hausnummer // PLZ Ort"
             }),
             "comment": forms.Textarea(attrs={
                 'class': INPUT_STYLE,

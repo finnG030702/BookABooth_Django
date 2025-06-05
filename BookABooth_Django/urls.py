@@ -16,7 +16,7 @@ from .views import (HomeView,
                     BookingListView, BookingDetailView, BookingDeleteView,
                     CompanyDetailView, CompanyUpdateView,
                     WaitingListView, TermsResetView,
-                    ProfileView, verify_email
+                    ProfileView, add_to_waiting_list, verify_email
                     )
 
 urlpatterns = [
@@ -69,6 +69,7 @@ urlpatterns = [
     path("company/<int:pk>/edit/", CompanyUpdateView.as_view(), name="company_edit"),
 
     path("waitinglist/", WaitingListView.as_view(), name="waitingList"),
+    path("user-waitinglist/", add_to_waiting_list, name="user_add_to_waitinglist"),
     path("api/waitinglist/", WaitingListView.waitinglist_table_partial, name="waitinglist_partial"),
     path("waitinglist/add/<int:company_id>", WaitingListView.add_to_waitinglist, name="add_to_waitinglist"),
     path("waitinglist/remove/<int:company_id>", WaitingListView.remove_from_waitinglist, name="remove_from_waitinglist"),
