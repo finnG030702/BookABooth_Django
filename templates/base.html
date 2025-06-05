@@ -1,3 +1,4 @@
+{% load django_htmx %}
 <!DOCTYPE html>
 <html lang="de">
 
@@ -7,15 +8,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{% block title %}BookABooth in Django{% endblock %}</title>
+    {% htmx_script %}
+    <meta name="csrf-token" content="{{ csrf_token }}">
 </head>
 
-<body class="bg-gray-100">
+<body hx-headers="{'x-csrftoken': '{{ csrf_token }}'}" class="bg-gray-100">
     <header class="bg-white">
         <nav class="flex justify-between items-center w-[92%] mx-auto">
             <a href="{% url 'home' %}">
-                <div class="flex items-center gap-2">
-                    <img src="https://www.jade-hs.de/typo3conf/ext/jhs_site/Resources/Public/Images/jadehs-logo.png"
-                        alt="Jade Hochschule Logo" class="h-18">
+                <div class="flex items-center gap-2 h-18">
+                    <img src="{% static 'img/Logo_JadeHochschule.jpg' %}"
+                        alt="Jade Hochschule Logo" class="h-6">
                     <p class="font-bold text-xl">BookABooth</p>
                 </div>
             </a>
@@ -53,7 +56,7 @@
                         </span>
                         <div id="adminMenu"
                             class="absolute right-[-30%] top-full mt-4 w-84 bg-white border border-gray-200 rounded-md shadow-md hidden">
-                            <a href="#" class="flex items-center gap-2 block px-5 py-2 hover:text-gray-500">
+                            <a href="{% url 'system' %}" class="flex items-center gap-2 block px-5 py-2 hover:text-gray-500">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                                     stroke-width="1.5" stroke="currentColor" class="size-6">
                                     <path stroke-linecap="round" stroke-linejoin="round"
@@ -61,7 +64,7 @@
                                 </svg>
                                 Standbuchung freischalten/sperren
                             </a>
-                            <a href="#" class=" block flex items-center gap-2 block px-5 py-2 hover:text-gray-500">
+                            <a href="{% url 'location_list' %}" class=" block flex items-center gap-2 block px-5 py-2 hover:text-gray-500">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                                     stroke-width="1.5" stroke="currentColor" class="size-6">
                                     <path stroke-linecap="round" stroke-linejoin="round"
@@ -69,7 +72,7 @@
                                 </svg>
                                 Lagepläne
                             </a>
-                            <a href="#" class="flex items-center gap-2 block px-5 py-2 hover:text-gray-500"><svg
+                            <a href="{% url 'booth_list' %}" class="flex items-center gap-2 block px-5 py-2 hover:text-gray-500"><svg
                                     xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                                     stroke-width="1.5" stroke="currentColor" class="size-6">
                                     <path stroke-linecap="round" stroke-linejoin="round"
@@ -77,7 +80,7 @@
                                 </svg>
                                 Messestände
                             </a>
-                            <a href="#" class="flex items-center gap-2 block px-5 py-2 hover:text-gray-500">
+                            <a href="{% url 'servicepackage_list' %}" class="flex items-center gap-2 block px-5 py-2 hover:text-gray-500">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                                     stroke-width="1.5" stroke="currentColor" class="size-6">
                                     <path stroke-linecap="round" stroke-linejoin="round"
@@ -85,7 +88,7 @@
                                 </svg>
                                 Service Pakete
                             </a>
-                            <a href="#" class="flex items-center gap-2 block px-5 py-2 hover:text-gray-500">
+                            <a href="{% url 'booking_list' %}" class="flex items-center gap-2 block px-5 py-2 hover:text-gray-500">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                                     stroke-width="1.5" stroke="currentColor" class="size-6">
                                     <path stroke-linecap="round" stroke-linejoin="round"
@@ -93,7 +96,7 @@
                                 </svg>
                                 Buchungen
                             </a>
-                            <a href="#" class="flex items-center gap-2 block px-5 py-2 hover:text-gray-500">
+                            <a href="{% url 'waitingList' %}" class="flex items-center gap-2 block px-5 py-2 hover:text-gray-500">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                                     stroke-width="1.5" stroke="currentColor" class="size-6">
                                     <path stroke-linecap="round" stroke-linejoin="round"
@@ -101,13 +104,21 @@
                                 </svg>
                                 Warteliste
                             </a>
-                            <a href="#" class="flex items-center gap-2 block px-5 py-2 hover:text-gray-500">
+                            <a href="{% url 'privacyPolicy' %}" class="flex items-center gap-2 block px-5 py-2 hover:text-gray-500">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                                     stroke-width="1.5" stroke="currentColor" class="size-6">
                                     <path stroke-linecap="round" stroke-linejoin="round"
                                         d="M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.347a1.125 1.125 0 0 1 0 1.972l-11.54 6.347a1.125 1.125 0 0 1-1.667-.986V5.653Z" />
                                 </svg>
                                 Datenschutzerklärung aktualisieren
+                            </a>
+                            <a href="/admin" class="flex items-center gap-2 block px-5 py-2 hover:text-gray-500">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                    stroke-width="1.5" stroke="currentColor" class="size-6">
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.347a1.125 1.125 0 0 1 0 1.972l-11.54 6.347a1.125 1.125 0 0 1-1.667-.986V5.653Z" />
+                                </svg>
+                                Django Adminpanel
                             </a>
                         </div>
                     </li>
@@ -127,7 +138,7 @@
                     </button>
                     <div id="dropdown-menu"
                         class="dropdown absolute w-48 bg-white rounded-lg py-2 mt-1 shadow-xl hidden">
-                        <a href="#" class="flex items-center gap-2 block px-5 py-2 hover:text-gray-500">
+                        <a href="{% url 'profile' %}" class="flex items-center gap-2 block px-5 py-2 hover:text-gray-500">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                                 stroke="currentColor" class="size-6">
                                 <path stroke-linecap="round" stroke-linejoin="round"
@@ -203,10 +214,31 @@
                 </button>
             </div>
         </nav>
+
+        {% if messages %}
+            <div class="w-[92%] mx-auto mt-2 space-y-2 mb-4">
+                {% for message in messages %}
+                    <div class="
+                    px-4 py-3 rounded
+                    {% if message.tags == 'error' %}
+                        bg-red-100 text-red-800 border border-red-300
+                    {% elif message.tags == 'success' %}
+                        bg-green-100 text-green-800 border border-green-300
+                    {% elif message.tags == 'warning' %}
+                        bg-yellow-100 text-yellow-800 border border-yellow-300
+                    {% else %}
+                        bg-blue-100 text-blue-800 border border-blue-300
+                    {% endif %}">
+                        {{ message|safe }}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
     </header>
 
 
-    <main class="container mx-auto mt-10">
+    <main class="w-[98%] max-w-none mx-auto mt-10 px-4">
         {% block content %}
         {% endblock %}
     </main>
@@ -251,6 +283,14 @@
         document.addEventListener('click', (event) => {
             if (!adminButton.contains(event.target) && !adminMenu.contains(event.target)) {
                 adminMenu.classList.add('hidden');
+            }
+        });
+
+        // CSRF Token für HTMX-Anfragen
+        document.body.addEventListener('htmx:configRequest', (event) => {
+            const token = document.querySelector('meta[name="csrf-token"]').content;
+            if (token) {
+                event.detail.headers['X-CSRFToken'] = token;
             }
         });
 

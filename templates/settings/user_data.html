@@ -1,0 +1,18 @@
+<div class="p-5 border border-b-0 border-gray-200">
+
+    {% for field in user_data_form %}
+        <div class="mb-4">
+            <label for="{{ field.id_for_label }}" class="block text-sm font-medium text-gray-700">
+                {{ field.label }}
+            </label>
+            {{ field }}
+            {% if field.help_text %}
+                <p class="text-sm text-gray-500">{{ field.help_text }}</p>
+            {% endif %}
+            {% for error in field.errors %}
+                <p class="text-sm text-red-600">{{ error }}</p>
+            {% endfor %}
+        </div>
+    {% endfor %}
+
+</div>

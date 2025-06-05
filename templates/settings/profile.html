@@ -1,0 +1,117 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="max-w-7xl mx-auto mt-10 p-6 bg-white rounded-lg shadow-md">
+    <h1 class="text-3xl font-semibold mb-6 text-center">Profil von Benutzer {{ user }}</h1>
+
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {% if company_data_form %}
+            <section class="border-sm rounded-lg p-5 bg-gray-50 shadow-sm mt-2 mb-2">
+                <h2 class="text-xl font-semibold mb-4 text-gray-700">Unternehmensdaten</h2>
+                {% include "settings/company_data.html" %}
+            </section>
+        {% endif %}
+        <section class="border-sm rounded-lg p-5 bg-gray-50 shadow-sm mt-2 mb-2">
+            <h2 class="text-xl font-semibold mb-4 text-gray-700">Benutzerdaten</h2>
+            {% include "settings/user_data.html" %}
+        </section>
+
+        <button type="submit" class="cursor-pointer inline-block px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 mt-6">Speichern</button>
+    </form>
+    <br />
+    {% if not is_admin %}
+        <!-- Buchungsstatus -->
+        <div>
+            {% if has_confirmed_booking %}
+                <p>Sie haben eine <strong>bestätigte</strong> Standbuchung.</p>
+            {% else %}
+                <p>Es liegt noch <strong>keine</strong> Standbuchung vor.</p>
+            {% endif %}
+        </div>
+        <br />
+        <!-- Buchung stornieren -->
+        <div>
+            {% if has_confirmed_booking %}
+                <p>Falls Sie Ihre aktive Standbuchung stornieren möchten, können Sie dies hier tun.</p>
+            {% else %}
+                <p>Sie haben im Moment keine aktive Standbuchung.</p>
+            {% endif %}
+            <button 
+                hx-get="{% url 'modal_cancel_booking' %}"
+                hx-target="#modal-container"
+                hx-trigger="click"
+                hx-swap="innerHTML"
+                class="cursor-pointer px-4 py-2 bg-blue-600 text-white rounded-lg shadow-sm hover:bg-blue-700 mt-6 disabled:bg-gray-300 disabled:text-gray-500 disabled:cursor-not-allowed"
+                {% if not has_confirmed_booking %}disabled{% endif %}>
+                Standbuchung stornieren
+            </button>
+        </div>
+        <br />
+        <!-- Von Warteliste entfernen -->
+        <div>
+            {% if company_data_form.instance.waiting_list %}
+                <p>Sie befinden sich aktuell auf der Warteliste. Wenn Sie sich davon entfernen möchten, nutzen Sie den folgenden Button.</p>
+            {% else %}
+                <p>Sie befinden sich im Moment nicht auf der Warteliste.<br />
+                Wenn alle Stände gebucht sind, können Sie sich unter "Buchung" auf der Startseite eintragen.</p>
+        {% endif %}
+        <form method="post">
+            {% csrf_token %}
+            <button 
+                type="submit" 
+                name="leave_waiting_list"
+                class="cursor-pointer px-4 py-2 bg-blue-600 text-white rounded-lg shadow-sm hover:bg-blue-700 mt-6 disabled:bg-gray-300 disabled:text-gray-500 disabled:cursor-not-allowed" 
+                {% if not company_data_form.instance.waiting_list %}disabled{% endif %}
+            >
+                Von Warteliste entfernen
+            </button>
+        </form>
+        </div>
+    {% endif %}
+    <br />
+    <!-- Konto löschen -->
+    <div>
+        {% if has_confirmed_booking %}
+            <p>Sie haben eine bestätigte Standbuchung und können daher Ihr Konto nicht löschen.</p>
+        {% elif has_canceled_booking %}
+            <p>Sie haben eine stornierte Standbuchung und können daher Ihr Konto erst nach Rechnungsstellung löschen.</p>
+        {% elif only_one_admin %}
+            <p>Sie sind der einzige Admin im System. Es ist nicht möglich, den einzigen Admin zu löschen.</p>
+        {% else %}
+            <p>Hier können Sie Ihr Konto löschen. Wenn Sie Ihr Konto löschen, kann es nicht wiederhergestellt werden.</p>
+        {% endif %}
+        <button
+            hx-get="{% url 'modal_delete_account' %}"
+            hx-target="#modal-container"
+            hx-trigger="click"
+            hx-swap="innerHTML"
+            class="cursor-pointer px-4 py-2 rounded-lg mt-6 bg-red-600 text-white shadow-sm hover:bg-red-700 disabled:bg-gray-300 disabled:text-gray-500 disabled:cursor-not-allowed"
+            {% if has_confirmed_booking or has_canceled_booking or only_one_admin %}disabled{% endif %}>
+            Konto löschen
+        </button>
+    </div>
+</div>
+
+<div id="modal-container"></div>
+
+<script>
+    document.body.addEventListener('click', function(event) {
+        const modal = document.querySelector('.modal');
+        if (!modal) return;
+
+        if (!event.target.closest('.modal-content')) {
+            modal.remove()
+        }
+    });
+
+    document.body.addEventListener('click', function(event) {
+        if (event.target.classList.contains('modal-close')) {
+            const modal = event.target.closest('.modal');
+            if (modal) modal.remove()
+        }
+    });
+</script>
+
+{% endblock %}

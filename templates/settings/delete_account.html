@@ -1,0 +1,45 @@
+<div class="modal fixed inset-0 bg-black/40 bg-opacity-50 flex items-center justify-center z-50">
+    <div class="modal-content bg-white rounded-lg p-6 max-w-md w-full shadow-lg relative">
+        <header class="mb-4 border-b pb-2">
+            <h2 class="text-2xl font-bold">Benutzerkonto löschen</h2>
+        </header>
+        <h2 class="text-xl font-semibold mb-4">Sind Sie sicher, dass Sie Ihr Konto löschen wollen?</h2>
+        <p class="mb-4 text-gray-700">
+            Beachten Sie, dass dies nicht rückgängig gemacht werden kann.<br>
+            Bitte geben Sie zur Bestätigung Ihr Passwort ein.
+        </p>
+        <form method="post" hx-post="{% url 'profile' %}">
+            {% csrf_token %}
+            <label for="password" class="block mb-2 font-medium text-gray-800">
+                Passwort:
+            </label>
+            <input
+                id="password"
+                name="password"
+                type="password"
+                required
+                class="border rounded px-3 py-2 mb-4 w-full"
+                oninput="document.getElementById('submit-btn').disabled = !this.value.trim()"
+                autocomplete="current-password"
+            />
+            <div class="flex justify-end">
+                <button 
+                    id="submit-btn" 
+                    type="submit" 
+                    name="delete_account"
+                    class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded mr-2 cursor-pointer" 
+                    disabled
+                >
+                    Konto löschen
+                </button>
+                <button 
+                    type="button" 
+                    onclick="this.closest('.modal').remove()"
+                    class="modal-close bg-gray-300 hover:bg-gray-400 px-4 py-2 rounded cursor-pointer"
+                >
+                    Abbrechen
+                </button>
+            </div>
+        </form>
+    </div>
+</div>

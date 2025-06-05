@@ -1,0 +1,200 @@
+<div class="mt-6 space-y-2">
+    <h2 class="text-lg font-semibold text-gray-800">Checkliste und Status:</h2>
+    <p>Check: {{ checklist }} </p>
+
+    <!-- Registrierung -->
+    <div
+        class="p-4 rounded-xl border {% if checklist.registered %}border-green-300 bg-green-50 {% else %}border-red-300 bg-red-50 {% endif %}">
+        <div class="flex justify-between items-center mb-1">
+            <h3 class="font-medium text-gray-900">Registrierung</h3>
+            <span
+                class="text-sm font-semibold {% if checklist.registered %}text-green-600 {% else %}text-red-600 {% endif %}">
+                {% if checklist.registered %}erledigt {% else %}offen {% endif %}
+            </span>
+        </div>
+        <p class="text-sm text-gray-700">Account wurde erstellt.</p>
+    </div>
+
+    <!-- Verifizierung -->
+    <div
+        class="p-4 rounded-xl border {% if checklist.verified %}border-green-300 bg-green-50 {% else %}border-red-300 bg-red-50 {% endif %}">
+        <div class="flex justify-between items-center mb-1">
+            <h3 class="font-medium text-gray-900">Verifizierung</h3>
+            <span
+                class="text-sm font-semibold {% if checklist.verified %}text-green-600 {% else %}text-red-600 {% endif %}">
+                {% if checklist.verified %}erledigt {% else %}offen {% endif %}
+            </span>
+        </div>
+        <p class="text-sm text-gray-700">Account ist verifiziert.</p>
+    </div>
+
+    <!-- Kontaktdaten -->
+    <div
+        class="p-4 rounded-xl border {% if checklist.address and checklist.logo and checklist.phone and checklist.description %}border-green-300 bg-green-50 {% else %}border-red-300 bg-red-50 {% endif %}">
+        <div class="flex justify-between items-center mb-2">
+            <h3 class="font-medium text-gray-900">Kontaktdaten</h3>
+            <span
+                class="text-sm font-semibold {% if checklist.address and checklist.logo and checklist.phone and checklist.description %}text-green-600 {% else %}text-red-600 {% endif %}">
+                {% if checklist.address and checklist.logo and checklist.phone and checklist.description %}erledigt {%else %}offen {% endif %}
+            </span>
+        </div>
+
+        <ul class="space-y-2">
+            <li
+                class="flex items-center justify-between px-3 py-2 rounded-lg text-sm {% if checklist.address %}bg-green-100 text-green-800 {% else %}bg-red-100 text-red-800 {% endif %}">
+                <span>Rechnungsanschrift</span>
+                {% if not checklist.address %}
+                <a href="{% url 'profile' %}" class="text-red-600 hover:text-red-800">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+                    </svg>                      
+                </a>
+                {% endif %}
+            </li>
+            <li
+                class="flex items-center justify-between px-3 py-2 rounded-lg text-sm {% if checklist.logo %}bg-green-100 text-green-800 {% else %}bg-red-100 text-red-800 {% endif %}">
+                <span>Logo des Unternehmens</span>
+                {% if not checklist.logo %}
+                <a href="{% url 'profile' %}" class="text-red-600 hover:text-red-800">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+                    </svg>
+                </a>
+                {% endif %}
+            </li>
+            <li
+                class="flex items-center justify-between px-3 py-2 rounded-lg text-sm {% if checklist.phone %}bg-green-100 text-green-800 {% else %}bg-red-100 text-red-800 {% endif %}">
+                <span>Telefonnummer</span>
+                {% if not checklist.phone %}
+                <a href="{% url 'profile' %}" class="text-red-600 hover:text-red-800">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+                    </svg>
+                </a>
+                {% endif %}
+            </li>
+            <li
+                class="flex items-center justify-between px-3 py-2 rounded-lg text-sm {% if checklist.description %}bg-green-100 text-green-800 {% else %}bg-red-100 text-red-800 {% endif %}">
+                <span>Firmenkurzbeschreibung</span>
+                {% if not checklist.description %}
+                <a href="{% url 'profile' %}" class="text-red-600 hover:text-red-800">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+                    </svg>
+                </a>
+                {% endif %}
+            </li>
+        </ul>
+        <p class="mt-2 mb-2 text-sm text-gray-700">Ändern Sie Ihre Kontaktdaten im <a href="{% url 'profile' %}"
+                class="text-red-600 hover:underline font-semibold">Profil</a>.</p>
+    </div>
+    <!-- Buchungsstatus -->
+    <div
+        class="p-4 rounded-xl border {% if checklist.bookingStatus == 'CONFIRMED' %}border-green-300 bg-green-50 {% elif checklist.bookingStatus == None or checklist.bookingStatus == 'CANCELED' or checklist.bookingStatus == 'BLOCKED' %}border-red-300 bg-red-50 {% else %}bg-gray-300 bg-white {% endif %}">
+        <div class="flex justify-between items-center mb-2">
+            <h3 class="font-medium text-gray-900">Buchung</h3>
+            <small
+                class="{% if checklist.bookingStatus == 'CONFIRMED' %}text-green-600 {% else %}text-red-600 {% endif %}">
+                {% if checklist.bookingStatus == 'CONFIRMED' %}erledigt {% else %}offen {% endif %}
+            </small>
+        </div>
+
+        {% if checklist.bookingStatus == 'CONFIRMED' %}
+        <p class="mb-2 text-gray-800">
+            Sie haben einen Stand gebucht. Details finden Sie <a href="#"
+                class="text-red-600 hover:underline font-semibold">hier</a>.<br />
+            Sie können Ihre Buchung über Ihr <a href="{% url 'profile' %}"
+                class="text-red-600 hover:underline font-semibold">Profil</a> stornieren.
+        </p>
+
+        {% elif not system.enabled %}
+        <p class="mb-2 text-gray-800">
+            Die Standbuchung ist systemseitig nicht freigegeben.
+            {% if not checklist.address or not checklist.logo or not checklist.phone or not checklist.description %}
+            Nutzen Sie die Zeit, um Ihre Kontaktdaten zu komplettieren.
+            {% endif %}
+        </p>
+
+        {% elif not checklist.address or not checklist.logo or not checklist.phone or not checklist.description %}
+        <p class="mb-2 text-gray-800">
+            Bitte vervollständigen Sie Ihre Kontaktdaten, um einen Stand buchen zu können.
+        </p>
+
+        {% elif checklist.bookingStatus != 'CONFIRMED' and checklist.bookingStatus != 'BLOCKED' and checklist.allBoothsOccupied and not checklist.waitingList %}
+        <p class="mb-2 text-gray-800">
+            Alle Stände sind bereits gebucht. Sie können sich
+            <span class="text-red-600 hover:underline font-semibold cursor-pointer" onclick="addToWaitingList()">hier</span> für die
+            Warteliste eintragen.
+        </p>
+
+        {% elif checklist.bookingStatus != 'CONFIRMED' and checklist.bookingStatus != 'BLOCKED' and checklist.allBoothsOccupied and checklist.waitingList %}
+        <p class="mb-2 text-gray-800">
+            Sie befinden sich auf der Warteliste. Sie erhalten eine E-Mail, wenn weitere Stände verfügbar sind.
+        </p>
+
+        {% elif checklist.bookingStatus == 'CANCELED' %}
+        <p class="mb-2 text-gray-800">
+            Ihre Buchung wurde storniert. Sie können <a href="#" class="text-red-600 hover:underline font-semibold">hier</a> eine erneute Buchung vornehmen.
+        </p>
+
+        {% elif checklist.bookingStatus == 'BLOCKED' %}
+        <p class="mb-2 text-gray-800">
+            Es wird gerade eine Buchung für Ihre Firma vorgenommen. Bitte warten Sie, bis die Buchung abgeschlossen ist.
+            Sollten Sie eine Standbuchung abgebrochen haben, so wird der ausgewählte Stand nach einiger Zeit automatisch
+            freigegeben.
+        </p>
+
+        {% elif checklist.bookingStatus == None and not checklist.allBoothsOccupied and checklist.address and checklist.logo and checklist.phone and checklist.description %}
+        <p class="mb-2 text-gray-800">
+            Nehmen Sie Ihre Buchung <a href="#" class="text-red-600 hover:underline font-semibold">hier</a> vor.
+        </p>
+        {% endif %}
+    </div>
+
+    <p class="mt-4 text-sm text-gray-600">
+        <span class="inline-block w-4 h-4 mr-2 align-middle" style="background-color: #f5c6cb;">&nbsp;</span> Rot: ausstehende Pflichtangabe<br />
+        <span class="inline-block w-4 h-4 mr-2 align-middle" style="background-color: #c3e6cb;">&nbsp;</span> Grün: erledigt <br />
+    </p>
+
+</div>
+
+<script>
+    function addToWaitingList() {
+        fetch("{% url 'user_add_to_waitinglist' %}", {
+            method: "POST",
+            headers: {
+                "X-CSRFToken": getCookie("csrftoken"),
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({})
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload()
+            } else {
+                alert("Fehler beim Eintragen auf die Warteliste.");
+            }
+        })
+        .catch(error => {
+            console.error("Fehler:", error);
+            alert("Ein Fehler ist aufgetreten.");
+        });
+    }
+
+    // CSRF-Token Hilfsfunktion
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== "") {
+            const cookies = document.cookie.split(";");
+            for (const cookie of cookies) {
+                const [key, value] = cookie.trim().split('=');
+                if (key == name) {
+                    cookieValue = decodeURIComponent(value);
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+</script>

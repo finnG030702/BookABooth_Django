@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="max-w mx-auto mt-10 p-6 bg-white rounded-lg shadow-md">
+    <h2 class="text-xl font-semibold mb-6 text-center">Unternehmen {{ object.id }}</h2>
+    <div class="grid grid-cols-1 gap-2">
+        <p><strong>Name:</strong> {{ object.name }}</p>
+        <p><strong>E-Mail:</strong> {{ object.employees.first.email }}</p>
+        <p><strong>Rechnungsadresse:</strong> {{ object.billing_address }}</p>
+        <p><strong>Logo:</strong> {{ object.logo }}</p>
+        <div>
+            <img id="preview" src="{% if object.logo %}{{ object.logo.url }}{% endif %}" alt="Logo Preview"
+                class="max-w-xs max-h-64 border rounded-lg">
+        </div>
+        <p><strong>Beschreibung:</strong> {{ object.description }}</p>
+        <p><strong>Auf Warteliste:</strong> {{ object.waiting_list }}</p>
+        <p><strong>Auf Ausstellerliste:</strong> {{ object.exhibitor_list }}</p>
+    </div>
+
+    <div class="mt-4">
+        <a href="{% url 'booking_list' %}"
+            class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition">Zurück</a>
+        <a href="{% url 'company_edit' object.pk %}"
+            class="px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition">Bearbeiten</a>
+    </div>
+</div>
+
+{% endblock %}

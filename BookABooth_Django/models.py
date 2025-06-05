@@ -64,6 +64,7 @@ class Company(models.Model):
     billing_address = models.CharField(max_length=255, blank=True, null=True)
     logo = models.ImageField(upload_to='company_logos/', blank=True, null=True)
     description = models.CharField(max_length=1024, blank=True, null=True)
+    comment = models.CharField(max_length=1024, blank=True, null=True)
     waiting_list = models.BooleanField(default=False)
     exhibitor_list = models.BooleanField(default=False)
 
@@ -78,6 +79,10 @@ class System(models.Model):
     enabled (boolean): When enabled, the booking is permitted for users.
     """
     enabled = models.BooleanField(default=False)
+
+    def __str__(self):
+        x = str(self.id)
+        return x
     
 class User(AbstractUser):
     """
@@ -87,8 +92,8 @@ class User(AbstractUser):
     privacy_policy_accepted (boolean): Will be set True when the user agrees to the privacy policy.
     company (Company): The company the user works for. 
     """
-    phone = models.CharField(max_length=20, blank=True, null=True)
-    privacy_policy_accepted = models.BooleanField(default=False)
+    phone = models.TextField(max_length=20, blank=True, null=True)
+    privacy_policy_accepted = models.BooleanField(default=False, blank=False, null=False)
     company = models.ForeignKey('Company', on_delete=models.SET_NULL, null=True, blank=True, related_name='employees')
 
     def __str__(self):
@@ -102,7 +107,7 @@ class Location(models.Model):
     location (str): Name of the Location (Aula, Zelt 1, ...)
     site_plan (image): Site plan of the given location.
     """
-    location = models.CharField(unique=True, max_length=200, blank=True, null=True)
+    location = models.CharField(unique=True, max_length=200)
     site_plan = models.ImageField(upload_to='site_plan/', blank=True, null=True)
 
     def __str__(self):
@@ -123,3 +128,14 @@ class ServicePackage(models.Model):
 
     def __str__(self):
         return self.name
+
+class TermsUpdateLog(models.Model):
+    """
+    Tracks when the terms of service are updated.
+
+    updated_at (datetime): When the terms were last updated.
+    """
+    updated_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Aktualisiert am {self.updated_at.strftime('%d.%m.%Y %H:%M:%S')}"

@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block content %}
+{% url 'location_list' as location_list_url %}
+
+<div class="max-w mx-auto mt-10 p-6 bg-white rounded-lg shadow-md">
+    <h2 class="text-xl font-semibold mb-6 text-center">Lageplan {{ object.id }}</h2>
+    <div class="grid grid-cols-1 gap-2">
+        <p><strong>Name:</strong> {{ object.location }}</p>
+        <p><strong>Grafik:</strong> {{ object.site_plan }}</p>
+        <div class="mb-4">
+            <img id="preview" src="{% if view.object and view.object.site_plan %}{{ view.object.site_plan.url }}{% endif %}" alt="Lageplan Preview" class="max-w-xs max-h-64 border rounded-lg">
+        </div>
+    </div>
+
+    <div class="mt-4">
+        <a href="{{ request.META.HTTP_REFERER|default:location_list_url }}" class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition">Zurück</a>
+        <a href="{% url 'location_edit' object.pk %}" class="px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition">Bearbeiten</a>
+    </div>
+</div>
+
+{% endblock %}

@@ -7,17 +7,31 @@
   <form method="post" class="space-y-4">
     {% csrf_token %}
 
-    {% for field in form %}
-    <div>
-      <label for="{{ field.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
-        {{ field.label}}
+      {% for field in form %}
+          {% if field.name != "privacy_policy_accepted" %}
+              <div>
+                  <label for="{{ field.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
+                      {{ field.label }}
+                  </label>
+                  {{ field }}
+                  {% if field.errors %}
+                      <p class="text-red-600 text-sm mt-1">{{ field.errors }}</p>
+                  {% endif %}
+              </div>
+          {% endif %}
+      {% endfor %}
+
+  <div class="flex items-start">
+      <div class="flex items-center h-5">
+          {{ form.privacy_policy_accepted }}
+      </div>
+      <label for="{{ form.privacy_policy_accepted.id_for_label }}" class="ml-2 text-sm text-gray-700">
+          {{ form.privacy_policy_accepted.label }}
       </label>
-      {{ field }}
-      {% if field.errors %}
-      <p class="text-red-600 text-sm mt-1">{{ field.errors }}</p>
-      {% endif %}
-    </div>
-    {% endfor %}
+  </div>
+  {% if form.privacy_policy_accepted.errors %}
+    <p class="text-red-600 text-sm mt-1">{{ form.privacy_policy_accepted.errors }}</p>
+  {% endif %}
 
     <button type="submit"
       class="w-full bg-blue-500 hover:bg-blue-600 text-white py-2 rounded-md font-semibold transition cursor-pointer">
