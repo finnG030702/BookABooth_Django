@@ -45,7 +45,9 @@
                 <span>Rechnungsanschrift</span>
                 {% if not checklist.address %}
                 <a href="{% url 'profile' %}" class="text-red-600 hover:text-red-800">
-                    <i class="bi bi-arrow-right"></i> <!-- Oder einfach ➜ -->
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+                    </svg>                      
                 </a>
                 {% endif %}
             </li>
@@ -54,7 +56,9 @@
                 <span>Logo des Unternehmens</span>
                 {% if not checklist.logo %}
                 <a href="{% url 'profile' %}" class="text-red-600 hover:text-red-800">
-                    <i class="bi bi-arrow-right"></i>
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+                    </svg>
                 </a>
                 {% endif %}
             </li>
@@ -63,7 +67,9 @@
                 <span>Telefonnummer</span>
                 {% if not checklist.phone %}
                 <a href="{% url 'profile' %}" class="text-red-600 hover:text-red-800">
-                    <i class="bi bi-arrow-right"></i>
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+                    </svg>
                 </a>
                 {% endif %}
             </li>
@@ -72,7 +78,9 @@
                 <span>Firmenkurzbeschreibung</span>
                 {% if not checklist.description %}
                 <a href="{% url 'profile' %}" class="text-red-600 hover:text-red-800">
-                    <i class="bi bi-arrow-right"></i>
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+                    </svg>
                 </a>
                 {% endif %}
             </li>
@@ -107,7 +115,7 @@
             {% endif %}
         </p>
 
-        {% elif not checklist.address and not checklist.logo and not checklist.phone and not checklist.description %}
+        {% elif not checklist.address or not checklist.logo or not checklist.phone or not checklist.description %}
         <p class="mb-2 text-gray-800">
             Bitte vervollständigen Sie Ihre Kontaktdaten, um einen Stand buchen zu können.
         </p>
@@ -136,7 +144,7 @@
             freigegeben.
         </p>
 
-        {% elif checklist.bookingStatus == None and not checklist.allBoothsOccupied %}
+        {% elif checklist.bookingStatus == None and not checklist.allBoothsOccupied and checklist.address and checklist.logo and checklist.phone and checklist.description %}
         <p class="mb-2 text-gray-800">
             Nehmen Sie Ihre Buchung <a href="#" class="text-red-600 hover:underline font-semibold">hier</a> vor.
         </p>
