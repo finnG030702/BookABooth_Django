@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="max-w-md mx-auto mt-10 p-6 bg-white rounded-lg shadow-md">
+    <h1 class="text-3xl font-semibold mb-6 text-center">E-Mail-Verifizierung erfolgreich</h1>
+    <p>Ihr Konto wurde aktiviert. Sie können sich jetzt <a href="{% url 'login' %}" class="text-blue-500 hover:underline">einloggen</a>.</p>
+</div>
+
+{% endblock %}

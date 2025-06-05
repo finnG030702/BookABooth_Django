@@ -16,9 +16,9 @@
     <header class="bg-white">
         <nav class="flex justify-between items-center w-[92%] mx-auto">
             <a href="{% url 'home' %}">
-                <div class="flex items-center gap-2">
-                    <img src="https://www.jade-hs.de/typo3conf/ext/jhs_site/Resources/Public/Images/jadehs-logo.png"
-                        alt="Jade Hochschule Logo" class="h-18">
+                <div class="flex items-center gap-2 h-18">
+                    <img src="{% static 'img/Logo_JadeHochschule.jpg' %}"
+                        alt="Jade Hochschule Logo" class="h-6">
                     <p class="font-bold text-xl">BookABooth</p>
                 </div>
             </a>
@@ -238,7 +238,7 @@
     </header>
 
 
-    <main class="container mx-auto mt-10">
+    <main class="w-[98%] max-w-none mx-auto mt-10 px-4">
         {% block content %}
         {% endblock %}
     </main>

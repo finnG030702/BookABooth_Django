@@ -28,20 +28,12 @@ class CustomUserCreationForm(UserCreationForm):
         model = User
         fields = ('username', 'company_name', 'email', 'password1', 'password2')
 
-
     def __init__(self, *args, **kwargs):
         super(CustomUserCreationForm, self).__init__(*args, **kwargs)
         for field in self.fields.values():
             field.widget.attrs.update({
                 'class': INPUT_STYLE,
             })
-
-    def save(self, commit=True):
-        user = super().save(commit=False)
-        user.privacy_policy_accepted = self.cleaned_data['privacy_policy_accepted']
-        if commit:
-            user.save()
-        return user
 
 class CustomUserChangeForm(forms.ModelForm):
     """

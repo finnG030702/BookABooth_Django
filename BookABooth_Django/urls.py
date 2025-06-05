@@ -16,7 +16,7 @@ from .views import (HomeView,
                     BookingListView, BookingDetailView, BookingDeleteView,
                     CompanyDetailView, CompanyUpdateView,
                     WaitingListView, TermsResetView,
-                    ProfileView
+                    ProfileView, verify_email
                     )
 
 urlpatterns = [
@@ -24,6 +24,7 @@ urlpatterns = [
 
     path("accounts/signup/", SignUpView.as_view(), name="signup"),
     path("accounts/login/", LoginView.as_view(), name="login"),
+    path("accounts/verify/<uidb64>/<token>/", verify_email, name="verify_email"),
 
     path("accounts/password_change/", CustomPasswordChangeView.as_view(), name="password_change"),
     path("accounts/password_reset/", PasswortResetView.as_view(), name="password_reset"),

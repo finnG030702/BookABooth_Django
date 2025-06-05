@@ -2,12 +2,16 @@ from django.contrib import messages
 from django.contrib.auth import get_user_model, logout, authenticate
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.contrib.auth.tokens import default_token_generator
 from django.shortcuts import get_object_or_404, render, redirect
 from django.urls import reverse_lazy, reverse
 from django.utils.safestring import mark_safe
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.utils.encoding import force_bytes
 from django.views import View
 from django.views.decorators.http import require_POST
-from django.http import HttpResponse, HttpResponseBadRequest
+from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseRedirect
+from django.core.mail import send_mail
 from django.views.generic import TemplateView, CreateView, ListView, DetailView, UpdateView, DeleteView
 from django.contrib.auth.views import LoginView, PasswordChangeView, PasswordResetView, PasswordResetCompleteView, PasswordResetDoneView, PasswordResetConfirmView
 from .forms import CompanyForm, CustomPasswordResetForm, CustomUserChangeForm, CustomUserCreationForm, CustomUserLoginForm, CustomPasswordChangeForm, CustomPasswordResetConfirmForm, LocationForm, BoothForm, ServicePackageForm, CustomCompanyChangeForm
@@ -43,9 +47,51 @@ class SignUpView(CreateView):
 
         user = form.save(commit=False)
         user.company = company
+        user.is_active = False
+        user.privacy_policy_accepted = form.cleaned_data['privacy_policy_accepted']
         user.save()
 
-        return super().form_valid(form)
+        self.object = user
+        self.send_verification_email(user)
+
+        messages.success(self.request, "Registrierung erfolgreich! Bitte überprüfen Sie Ihre E-Mails zur Verifizierung.")
+        return HttpResponseRedirect(self.get_success_url())
+    
+    def send_verification_email(self, user):
+        token = default_token_generator.make_token(user)
+        uid = urlsafe_base64_encode(force_bytes(user.pk))
+        verification_link = self.request.build_absolute_uri(
+            reverse("verify_email", kwargs={"uidb64": uid, "token": token})
+        )
+        send_mail(
+            subject="Django BookABooth - Bitte bestätigen Sie Ihre E-Mail",
+            message=(
+                f"Moin {user.username}, \n\n"
+                f"bitte klicken Sie auf den folgenden Link, um Ihr Nutzerkonto zu aktivieren:\n"
+                f"{verification_link}\n\n"
+                f"Falls Sie sich nicht registriert haben, sollten Sie dies vielleicht tun."
+            ),
+            from_email="noreply@bookabooth.de",
+            recipient_list=[user.email],
+        )
+    
+def verify_email(request, uidb64, token):
+    """
+    Verification for Mail sent in Signup. Might work.
+    """
+    try:
+        uid = urlsafe_base64_decode(uidb64).decode()
+        user = User.objects.get(pk=uid)
+    except (TypeError, ValueError, OverflowError, User.DoesNotExist):
+        user = None
+    
+    token_valid = user and default_token_generator.check_token(user, token)
+    if token_valid:
+        user.is_active = True
+        user.save()
+        return render(request, "registration/verify_success.html")
+    else:
+        return render(request, "registration/verify_failed.html")
 
 class LoginView(LoginView):
     """

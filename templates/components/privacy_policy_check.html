@@ -1,4 +1,4 @@
-<form method="post" action="{% url 'accept_privacy_policy' %}" class="max-w-xl mx-auto mt-4 mb-6 p-4 rounded-xl bg-yellow-50 border border-yellow-300 shadow-sm flex flex-col items-start gap-3">
+<form method="post" action="{% url 'accept_privacy_policy' %}" class="max-w-xl mt-4 mb-6 p-4 rounded-xl bg-yellow-50 border border-yellow-300 shadow-sm flex flex-col items-start gap-3">
     {% csrf_token %}
     <h3><strong>Die Nutzungsbedingungen wurden aktualisiert!</strong></h3>
     <p>Bitte lesen und akzeptieren Sie die <a href="https://www.jade-hs.de/datenschutz" target="_blank" rel="noopener noreferrer" class="text-blue-500 hover:underline">neuen Nutzungsbedingungen</a>, um alle Features weiterhin nutzen zu können.</p>
@@ -10,5 +10,3 @@
 
     <button type="submit" class="mt-2 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 hover:cursor-pointer">Zustimmen</button>
 </form>
-
-
