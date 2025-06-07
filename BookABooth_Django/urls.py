@@ -1,6 +1,6 @@
 from django.urls import path
 from . import views
-from .views import (HomeView,
+from .views import (BookABoothView, HomeView,
                     CustomPasswordChangeView,
                     SignUpView,
                     LoginView,
@@ -16,7 +16,7 @@ from .views import (HomeView,
                     BookingListView, BookingDetailView, BookingDeleteView,
                     CompanyDetailView, CompanyUpdateView,
                     WaitingListView, TermsResetView,
-                    ProfileView, add_to_waiting_list, verify_email
+                    ProfileView, add_to_waiting_list, booking_modal, verify_email
                     )
 
 urlpatterns = [
@@ -76,4 +76,7 @@ urlpatterns = [
 
     path("accept-privacy-policy/", views.accept_privacy_policy, name="accept_privacy_policy"),
     path("privacy-policy/", TermsResetView.as_view(), name="privacyPolicy"),
+
+    path("bookabooth/", BookABoothView.as_view(), name="bookabooth"),
+    path("bookabooth/booking-modal/<int:booth_id>/", booking_modal, name="booking_modal"),
 ]
