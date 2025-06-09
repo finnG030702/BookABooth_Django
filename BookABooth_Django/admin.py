@@ -34,6 +34,7 @@ class BoothAdmin(admin.ModelAdmin):
 
     list_display = ('id', 'title', 'ceiling_height', 'available', 'location', 'get_service_package')
     list_filter = ('location', 'id', 'title', 'ceiling_height', 'service_package', 'available')
+    filter_horizontal = ('service_package',)
 
     def get_service_package(self, obj):
         return ", ".join([sp.name for sp in obj.service_package.all()])

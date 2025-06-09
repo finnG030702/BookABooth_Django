@@ -5,12 +5,13 @@ from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.tokens import default_token_generator
 from django.shortcuts import get_object_or_404, render, redirect
 from django.urls import reverse_lazy, reverse
+from django.utils import timezone
 from django.utils.safestring import mark_safe
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes
 from django.views import View
 from django.views.decorators.http import require_POST
-from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseRedirect, JsonResponse
+from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseForbidden, HttpResponseRedirect, JsonResponse
 from django.core.mail import send_mail
 from types import SimpleNamespace
 from django.views.generic import TemplateView, CreateView, ListView, DetailView, UpdateView, DeleteView
@@ -39,6 +40,7 @@ def add_to_waiting_list(request):
         company = user.company
         company.waiting_list = True
         company.save()
+        messages.success(request, "Sie wurden der Warteliste hinzugefügt.")
         return JsonResponse({"success": True})
     return JsonResponse({"success": False, "error": "Kein Unternehmen gefunden"}, status=400)
 
@@ -348,9 +350,17 @@ class BookingDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
     def test_func(self):
         return self.request.user.is_superuser
 
-class BookingDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
-    model = Booking
-    success_url = reverse_lazy("booking_list")
+class BookingCancelView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
+    def post(self, request, *args, **kwargs):
+        booking = get_object_or_404(Booking, pk=kwargs['pk'])
+
+        try:
+            booking.cancel(canceled_by_admin=True)
+            messages.success(request, "Buchung wurde erfolgreich storniert.")
+        except ValueError as e:
+            messages.error(request, str(e))
+
+        return redirect("booking_list")
 
     def test_func(self):
         return self.request.user.is_superuser
@@ -505,6 +515,7 @@ class ProfileView(LoginRequiredMixin, View):
     def cancel_booking(self, request, *args, **kwargs):
         user = request.user
         company = self._get_company(user)
+
         if not company:
             messages.error(request, "Kein Unternehmen gefunden")
             return self._handle_redirect(request, 'profile')
@@ -514,10 +525,12 @@ class ProfileView(LoginRequiredMixin, View):
         except Booking.DoesNotExist:
             messages.error(request, "Keine bestätigte Buchung zum Stornieren gefunden.")
             return self._handle_redirect(request, 'profile')
-        
-        booking.status = "canceled"
-        booking.cancellationfee = 100
-        booking.save()
+
+        try:
+            booking.cancel()
+        except ValueError as e:
+            messages.error(request, str(e))
+            return self._handle_redirect(request, 'profile')
 
         messages.success(request, "Ihre Buchung wurde storniert.")
         return self._handle_redirect(request, 'profile')
@@ -578,3 +591,110 @@ class ProfileView(LoginRequiredMixin, View):
         if request.htmx:
             return render(request, "settings/delete_account.html")
         return HttpResponseBadRequest("Invalid request")
+    
+class BookABoothView(LoginRequiredMixin, TemplateView):
+    template_name = "bookabooth.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        selected_location_id = self.request.GET.get('location')
+        locations = Location.objects.all()
+
+        if selected_location_id:
+            booths = Booth.objects.filter(location_id=selected_location_id)
+        else:
+            booths = Booth.objects.all()
+
+        for booth in booths:
+            # Calculate total price for the booth
+            booth.total_price = sum(package.price for package in booth.service_package.all())
+
+            # Display the Company that booked the booth, checks for confirmed booking and exhibitor_list
+            booth.company_name = None
+            booking = Booking.objects.filter(booth=booth).first()
+            if booking and booking.status == 'confirmed' and booking.company and booking.company.exhibitor_list:
+                booth.company_name = booking.company.name
+
+        if self.request.user.is_authenticated and hasattr(self.request.user, 'company'):
+            user_company = self.request.user.company
+
+        has_booking = False
+        if user_company:
+            has_booking = Booking.objects.filter(company=user_company).exists
+
+        context['has_booking'] = has_booking
+        context['booths'] = booths
+        context['locations'] = locations
+        context['selected_location'] = int(selected_location_id) if selected_location_id else None
+
+        return context
+
+def booking_modal(request, booth_id):
+    """
+    Is called when BookingModal is opened.
+    Checks that the User is logged in and hasn't already booked a booth.
+    Sets the booking status to 'blocked' and makes the selected booth unavailable.
+    """
+    booth = get_object_or_404(Booth, id=booth_id)
+
+    # Check if User is logged in
+    if not request.user.is_authenticated or not hasattr(request.user, 'company'):
+        return HttpResponseForbidden("Bitte melden Sie sich an, um einen Stand zu buchen.")
+    
+    company = request.user.company
+
+    # Check if user has a confirmed booking
+    has_other_booking = Booking.objects.filter(
+        company=company,
+        status='confirmed'
+    ).exclude(booth=booth).exists()
+
+    if has_other_booking:
+        return HttpResponseForbidden("Sie haben bereits einen anderen Stand gebucht.")
+    
+    total_price = sum(package.price for package in booth.service_package.all())
+
+    booking, created = Booking.objects.get_or_create(
+        booth=booth,
+        company=company,
+        defaults={
+            'received': timezone.now(),
+            'status': 'blocked',
+            'price': total_price,
+            },
+    )
+
+    # Set booth to 'unavailable' to prevent other bookings
+    booth.available = False
+    booth.save()
+
+    return render(request, "components/booking_modal.html", {
+        'booth': booth,
+        'booking': booking
+    })
+
+@require_POST
+@login_required
+def confirm_booking(request, booth_id):
+    """
+    Called when the user confirms the booking.
+    Sets booking to 'confirmed' and saves the current time.
+    Redirect is handled with HTMX.
+    """
+    booth = get_object_or_404(Booth, id=booth_id)
+    company = request.user.company
+    booking = Booking.objects.filter(booth=booth, company=company, status='blocked').first()
+
+    if not booking:
+        return JsonResponse({'error': 'Keine gültige Buchung gefunden.'}, status=404)
+
+    booking.status = 'confirmed'
+    booking.received = timezone.now()
+    booking.save()
+
+    messages.success(request, "Ihre Buchung wurde erfolgreich bestätigt!")
+
+    response = HttpResponse()
+    response['HX-Redirect'] = reverse('home')
+    return response
