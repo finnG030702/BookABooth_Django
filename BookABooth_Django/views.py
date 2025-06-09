@@ -597,6 +597,7 @@ class BookABoothView(LoginRequiredMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        user_company = None
 
         selected_location_id = self.request.GET.get('location')
         locations = Location.objects.all()
@@ -612,16 +613,17 @@ class BookABoothView(LoginRequiredMixin, TemplateView):
 
             # Display the Company that booked the booth, checks for confirmed booking and exhibitor_list
             booth.company_name = None
-            booking = Booking.objects.filter(booth=booth).first()
-            if booking and booking.status == 'confirmed' and booking.company and booking.company.exhibitor_list:
+            booking = Booking.objects.filter(booth=booth, status='confirmed').order_by('-received').first()
+            if booking and booking.company and booking.company.exhibitor_list:
                 booth.company_name = booking.company.name
 
         if self.request.user.is_authenticated and hasattr(self.request.user, 'company'):
             user_company = self.request.user.company
 
+        # Checks if the User already has a confirmed booking. If the booking is canceled, a new one can be created.
         has_booking = False
         if user_company:
-            has_booking = Booking.objects.filter(company=user_company).exists
+            has_booking = Booking.objects.filter(company=user_company, status='confirmed').exists()
 
         context['has_booking'] = has_booking
         context['booths'] = booths
@@ -655,14 +657,14 @@ def booking_modal(request, booth_id):
     
     total_price = sum(package.price for package in booth.service_package.all())
 
-    booking, created = Booking.objects.get_or_create(
+    # TODO: Wird das Booking auch erstellt, wenn das Modal sofort wieder geschlossen wird?
+    # TODO: Außerdem vielleicht redirect wenn auf Abbrechen?
+    booking = Booking.objects.create(
         booth=booth,
         company=company,
-        defaults={
-            'received': timezone.now(),
-            'status': 'blocked',
-            'price': total_price,
-            },
+        received=timezone.now(),
+        status='blocked',
+        price=total_price
     )
 
     # Set booth to 'unavailable' to prevent other bookings

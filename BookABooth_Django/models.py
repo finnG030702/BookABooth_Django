@@ -30,8 +30,6 @@ class Booking(models.Model): # TODO: Kommentare für Models überarbeiten
     booth = models.ForeignKey('Booth', on_delete=models.SET_NULL, null=True, blank=True, related_name="booths")
 
     def cancel(self, canceled_by_admin=False):
-        if self.status != 'confirmed':
-            raise ValueError("Es können nur bestätigte Buchungen storniert werden")
 
         self.status = 'canceled'
         self.cancellationfee = 100  # TODO: Wird die auch gesetzt, wenn Admin Buchung storniert?
