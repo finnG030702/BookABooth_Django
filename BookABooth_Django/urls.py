@@ -13,10 +13,10 @@ from .views import (BookABoothView, HomeView,
                     BoothListView, BoothCreateView, BoothDetailView, BoothUpdateView, BoothDeleteView,
                     ServicepackageListView, ServicepackageCreateView, ServicepackageDetailView,
                     ServicepackageUpdateView, ServicepackageDeleteView,
-                    BookingListView, BookingDetailView, BookingDeleteView,
+                    BookingListView, BookingDetailView, BookingCancelView,
                     CompanyDetailView, CompanyUpdateView,
                     WaitingListView, TermsResetView,
-                    ProfileView, add_to_waiting_list, booking_modal, verify_email
+                    ProfileView, add_to_waiting_list, booking_modal, verify_email, confirm_booking,
                     )
 
 urlpatterns = [
@@ -63,7 +63,7 @@ urlpatterns = [
     path("booking/", BookingListView.as_view(), name="booking_list"),
     path("api/booking_list/", BookingListView.booking_table_partial, name="booking_table_partial"),
     path("booking/<int:pk>/", BookingDetailView.as_view(), name="booking_detail"),
-    path("booking/<int:pk>/delete/", BookingDeleteView.as_view(), name="booking_delete"),
+    path("booking/<int:pk>/delete/", BookingCancelView.as_view(), name="booking_delete"),
 
     path("company/<int:pk>/", CompanyDetailView.as_view(), name="company_detail"),
     path("company/<int:pk>/edit/", CompanyUpdateView.as_view(), name="company_edit"),
@@ -79,4 +79,5 @@ urlpatterns = [
 
     path("bookabooth/", BookABoothView.as_view(), name="bookabooth"),
     path("bookabooth/booking-modal/<int:booth_id>/", booking_modal, name="booking_modal"),
+    path("bookabooth/booking-modal/<int:booth_id>/confirm/", confirm_booking, name="confirm_booking"),
 ]

@@ -123,7 +123,6 @@
             const showInfoBtn = document.getElementById('show-info-btn')
             const closeInfoBtn = document.getElementById('close-info-btn')
 
-            // Show Modal
             modal.classList.remove('hidden');
 
             // Enable Confirm-Btn based on Checkbox
@@ -150,6 +149,21 @@
             });
         }
     });
+
+    document.body.addEventListener('htmx:configRequest', (event) => {
+        const token = getCookie('csrftoken');
+        if (token) {
+            event.detail.headers['X-CSRFToken'] = token;
+        }
+    });
+
+    function getCookie(name) {
+        const cookieValue = document.cookie
+            .split(';')
+            .find(row => row.startsWith(name + '='))
+            ?.split('=')[1];
+        return decodeURIComponent(cookieValue ||'');
+    }
 
 </script>
 

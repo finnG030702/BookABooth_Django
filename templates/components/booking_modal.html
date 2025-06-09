@@ -1,4 +1,4 @@
-<div id="booking-modal" class="fixed inset-0 z-50 hidden bg-black/40 flex items-center justify-center">
+<div id="booking-modal" data-booth-id="{{ booth.id }}" data-csrf-token="{{ csrf_token }}" class="fixed inset-0 z-50 hidden bg-black/40 flex items-center justify-center">
     <div class="bg-white rounded-lg p-6 max-w-md w-full shadow-lg">
         <h2 class="text-xl font-semibold mb-4">Buchung bestätigen</h2>
 
@@ -25,7 +25,11 @@
             <button id="abort-btn" class="bg-gray-500 px-4 py-2 rounded text-white hover:bg-gray-700 cursor-pointer">
                 Abbrechen
             </button>
-            <button id="confirm-btn" disabled class="bg-green-500 px-4 py-2 rounded text-white hover:bg-green-700 cursor-pointer disabled:cursor-not-allowed disabled:bg-green-300">
+            <button id="confirm-btn"
+                    hx-post="/bookabooth/booking-modal/{{ booth.id }}/confirm/"
+                    hx-target="body"
+                    hx-swap="none"
+                    disabled class="bg-green-500 px-4 py-2 rounded text-white hover:bg-green-700 cursor-pointer disabled:cursor-not-allowed disabled:bg-green-300">
                 Buchung bestätigen
             </button>
         </div>

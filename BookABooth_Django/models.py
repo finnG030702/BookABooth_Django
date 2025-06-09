@@ -1,7 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+from django.core.mail import send_mail
 
-class Booking(models.Model):
+class Booking(models.Model): # TODO: Kommentare für Models überarbeiten
     """
     Booking, which will be created by users.
 
@@ -27,6 +28,33 @@ class Booking(models.Model):
     cancellationfee = models.DecimalField(max_digits=21, decimal_places=2, blank=True, null=True)
     company = models.ForeignKey('Company', on_delete=models.DO_NOTHING, related_name="companies")
     booth = models.ForeignKey('Booth', on_delete=models.SET_NULL, null=True, blank=True, related_name="booths")
+
+    def cancel(self, canceled_by_admin=False):
+        if self.status != 'confirmed':
+            raise ValueError("Es können nur bestätigte Buchungen storniert werden")
+
+        self.status = 'canceled'
+        self.cancellationfee = 100  # TODO: Wird die auch gesetzt, wenn Admin Buchung storniert?
+        self.save()
+
+        booth = self.booth
+        booth.available = True
+        booth.save()
+
+        if canceled_by_admin:
+            users = self.company.employees.all()
+            user = users.first() if users.exists() else None
+            send_mail(
+                subject="Django BookABooth - Ihre Buchung wurde storniert",
+                message=(
+                    f"Moin {user.username}, \n\n"
+                    f"Ihre Buchung für den Stand {booth.title} wurde von einem Administrator storniert.\n"
+                    f"Falls Sie Rückfragen haben, wenden Sie sich gerne an unser Team."
+                ),
+                from_email="noreply@bookabooth.de",
+                recipient_list=[user.email],
+                fail_silently=True,
+            )
 
 
 class Booth(models.Model):
