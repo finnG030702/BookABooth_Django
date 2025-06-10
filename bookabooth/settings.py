@@ -38,7 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django_htmx',
-    'BookABooth_Django',
+    'BookABooth_Django.apps.BookaboothDjangoConfig',
 ]
 
 MIDDLEWARE = [
