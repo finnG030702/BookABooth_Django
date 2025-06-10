@@ -14,10 +14,11 @@ from django.views.decorators.http import require_POST
 from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseForbidden, HttpResponseRedirect, JsonResponse
 from django.core.mail import send_mail
 from types import SimpleNamespace
+from decimal import Decimal
 from django.views.generic import TemplateView, CreateView, ListView, DetailView, UpdateView, DeleteView
 from django.contrib.auth.views import LoginView, PasswordChangeView, PasswordResetView, PasswordResetCompleteView, PasswordResetDoneView, PasswordResetConfirmView
 from .forms import CompanyForm, CustomPasswordResetForm, CustomUserChangeForm, CustomUserCreationForm, CustomUserLoginForm, CustomPasswordChangeForm, CustomPasswordResetConfirmForm, LocationForm, BoothForm, ServicePackageForm, CustomCompanyChangeForm
-from .models import Company, System, Location, Booth, ServicePackage, Booking, TermsUpdateLog
+from .models import Company, System, Location, Booth, ServicePackage, Booking, SystemConfiguration, TermsUpdateLog
 
 User = get_user_model()
 
@@ -67,6 +68,7 @@ class HomeView(TemplateView):
                 "logo": bool(company and company.logo),
                 "description": bool(company and company.description),
                 "waitingList": bool(company and company.waiting_list),
+                "privacyPolicy": bool(user.privacy_policy_accepted),
                 "allBoothsOccupied": not Booth.objects.filter(available=True).exists(),
             }
 
@@ -454,6 +456,20 @@ class ProfileView(LoginRequiredMixin, View):
             return response
         else:
             return redirect(url)
+        
+    def _calculate_cancellation_fee(self, booking, system_config):
+        """
+        Calculates the fee for canceling a booking.
+        """
+        if not booking or not system_config:
+            return Decimal("0.00")
+        
+        multiplier = Decimal("1.0")
+
+        if timezone.now().date() <= system_config.cancellation_reimbursement_until:
+            multiplier = Decimal(100 - system_config.cancellation_reimbursement) / Decimal(100)
+
+        return (booking.price * multiplier).quantize(Decimal("0.01"))
     
     def dispatch(self, request, *args, **kwargs):
         action = kwargs.get('action')
@@ -583,8 +599,24 @@ class ProfileView(LoginRequiredMixin, View):
         return self._handle_redirect(request, 'home')
     
     def get_modal_cancel_booking(self, request, *args, **kwargs):
+        user = request.user
+        company = self._get_company(user)
+        system_config = SystemConfiguration.objects.first()
+
+        try:
+            booking = Booking.objects.get(company=company, status='confirmed')
+        except Booking.DoesNotExist:
+            return HttpResponse("Keine bestätigte Buchung gefunden", status=404)
+
+        cancellation_fee = self._calculate_cancellation_fee(booking, system_config)
+        context = {
+            "system": system_config,
+            "cancellation_fee": cancellation_fee,
+            "booking": booking,
+        }
+
         if request.htmx:
-            return render(request, "settings/cancel_booking.html")
+            return render(request, "settings/cancel_booking.html", context)
         return HttpResponseBadRequest("Invalid request")
     
     def get_modal_delete_account(self, request, *args, **kwargs):
@@ -620,15 +652,47 @@ class BookABoothView(LoginRequiredMixin, TemplateView):
         if self.request.user.is_authenticated and hasattr(self.request.user, 'company'):
             user_company = self.request.user.company
 
-        # Checks if the User already has a confirmed booking. If the booking is canceled, a new one can be created.
+        # Checks if the User already has a confirmed booking. If the booking is canceled, a new one can be created. Also saves the booth.
         has_booking = False
+        booking = None
+        booth = None
         if user_company:
-            has_booking = Booking.objects.filter(company=user_company, status='confirmed').exists()
+            booking = Booking.objects.filter(company=user_company, status='confirmed').order_by("-received").first()
+            has_booking = booking is not None
+            if booking:
+                booth = booking.booth
 
-        context['has_booking'] = has_booking
-        context['booths'] = booths
-        context['locations'] = locations
-        context['selected_location'] = int(selected_location_id) if selected_location_id else None
+        # Displays the Site_Plan for a location, if one is provided.
+        location = None
+        location_map = None
+        if not has_booking and selected_location_id:
+            try:
+                location = Location.objects.get(id=selected_location_id)
+                location_map = location.site_plan.url if location.site_plan else None
+            except Location.DoesNotExist:
+                location_map = None
+
+        if user_company:
+            checklist_complete = all([
+                user_company.billing_address,
+                user_company.logo,
+                self.request.user.phone,
+                user_company.description
+            ])
+        else:
+            checklist_complete = True
+
+        context.update({
+            'has_booking': has_booking,
+            'booking': booking,
+            'booth': booth,
+            'locations': locations,
+            'booths': booths,
+            'selected_location': int(selected_location_id) if selected_location_id else None,
+            'location_map': location_map,
+            'location': location if selected_location_id else None,
+            'checklist_complete': checklist_complete,
+        })
 
         return context
 
@@ -640,11 +704,27 @@ def booking_modal(request, booth_id):
     """
     booth = get_object_or_404(Booth, id=booth_id)
 
-    # Check if User is logged in
+    # Check if User is logged in and has a company
     if not request.user.is_authenticated or not hasattr(request.user, 'company'):
         return HttpResponseForbidden("Bitte melden Sie sich an, um einen Stand zu buchen.")
     
-    company = request.user.company
+    user = request.user
+    company = user.company
+
+    checklist_complete = all([
+        company.billing_address,
+        company.logo,
+        user.phone,
+        company.description
+    ])
+
+    # Check if the profile is complete
+    if not checklist_complete:
+        return HttpResponseForbidden("Bitte vervollständigen Sie Ihr Profil, bevor Sie einen Stand buchen.")
+    
+    # Check if privacy policy was accepted
+    if not user.privacy_policy_accepted:
+        return HttpResponseForbidden("Bitte akzeptieren Sie die Nutzungsbedingungen, bevor Sie einen Stand buchen.")
 
     # Check if user has a confirmed booking
     has_other_booking = Booking.objects.filter(
@@ -654,6 +734,15 @@ def booking_modal(request, booth_id):
 
     if has_other_booking:
         return HttpResponseForbidden("Sie haben bereits einen anderen Stand gebucht.")
+    
+    # Check if user has a blocked booking
+    has_blocked_booking = Booking.objects.filter(
+        company=company,
+        status='blocked'
+    ).exclude(booth=booth).exists()
+
+    if has_blocked_booking:
+        return HttpResponseForbidden("Sie haben bereits eine Buchung in Bearbeitung. Warten Sie ein paar Minuten und versuchen Sie es erneut.")
     
     total_price = sum(package.price for package in booth.service_package.all())
 
@@ -667,13 +756,16 @@ def booking_modal(request, booth_id):
         price=total_price
     )
 
+    system_config = SystemConfiguration.objects.first()
+
     # Set booth to 'unavailable' to prevent other bookings
     booth.available = False
     booth.save()
 
     return render(request, "components/booking_modal.html", {
         'booth': booth,
-        'booking': booking
+        'booking': booking,
+        'system': system_config
     })
 
 @require_POST
@@ -692,7 +784,7 @@ def confirm_booking(request, booth_id):
         return JsonResponse({'error': 'Keine gültige Buchung gefunden.'}, status=404)
 
     booking.status = 'confirmed'
-    booking.received = timezone.now()
+    booking.confirmed = timezone.now()
     booking.save()
 
     messages.success(request, "Ihre Buchung wurde erfolgreich bestätigt!")

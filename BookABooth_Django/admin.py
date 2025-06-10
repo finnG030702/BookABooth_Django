@@ -109,6 +109,16 @@ class SystemAdmin(admin.ModelAdmin):
     list_display = ('id', 'enabled')
     list_filter = ('id', 'enabled')
 
+class SystemConfigurationAdmin(admin.ModelAdmin):
+
+    list_display = ('cancellation_reimbursement', 'cancellation_reimbursement_until')
+
+    def has_add_permission(self, request):
+        """
+        Prevents adding two SystemConfigurations.
+        """
+        return not SystemConfiguration.objects.exists()
+
 
 class LocationAdmin(admin.ModelAdmin):
 
@@ -134,3 +144,4 @@ _register(User, UserAdmin)
 _register(System, SystemAdmin)
 _register(Location, LocationAdmin)
 _register(ServicePackage, ServicePackageAdmin)
+_register(SystemConfiguration, SystemConfigurationAdmin)

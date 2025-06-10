@@ -4,6 +4,33 @@
 
 <div class="max-w mx-auto mt-10 p-6 bg-white rounded-lg shadow-md">
     <h1 class="text-3xl font-semibold mb-6">Stand buchen</h1>
+
+    {% if has_booking %}
+    <div class="mb-6 p-4 border border-green-500 bg-green-100 rounded-md shadow-sm">
+        <p class="text-green-900">Sie haben Stand {{ booth.location.location }} - {{ booth.title }} gebucht.</p>
+        <p class="text-green-900">Kosten: {{ booking.price }} €</p>
+        <p class="text-green-900">Buchungsdatum: {{ booking.confirmed }}</p>
+    </div>
+    {% else %}
+        {% if not checklist_complete %}
+        <div class="mb-6 p-4 bg-red-100 text-red-800 border border-red-400 rounded-md shadow-sm">
+            <p><strong>Ihr Profil ist unvollständig.</strong></p>
+            <p>Prüfen Sie die Checkliste auf der <a href="{% url 'home' %}" class="text-red-600 hover:text-red-800 hover:underline font-semibold">Startseite</a>.</p>
+        </div>
+        {% elif location_map %}
+        <div class="w-60 mx-auto mb-6 p-4 bg-blue-50 rounded-md shadow-sm">
+            <a href="{{ location_map }}" target="_blank" rel="noopener noreferrer">
+                <img src="{{ location_map }}" alt="Lageplan des Geländes" class="max-h-48 mx-auto border rounded-md hover:scale-150 transition-transform duration-300 shadow-sm">
+            </a>
+            <p class="text-xs text-gray-500 mt-1">Klicken zum Vergrößern</p>
+        </div>
+        {% elif selected_location == None %}
+        <div class="w-full mb-6 p-4 bg-yellow-50 text-yellow-800 border border-yellow-300 rounded-md shadow-sm text-center">
+            Bitte wählen Sie einen Standort aus, um den zugehörigen Lageplan anzuzeigen.
+        </div>
+        {% endif %}
+    {% endif %}
+
     <div class="flex gap-6">
 
         <form method="get" action="{% url 'bookabooth' %}" class="mb-6">
@@ -44,7 +71,11 @@
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-200">
                     {% for booth in booths %}
+                    {% if has_booking and booth.id == booking.booth.id %}
+                    <tr class="bg-yellow-400 font-semibold">
+                    {% else %}
                     <tr>
+                    {% endif %}
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ booth.title }}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ booth.ceiling_height }}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ booth.location.location }}</td>
@@ -64,9 +95,9 @@
                             {% endif %}
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                            {% if not booth.available %}
+                            {% if not checklist_complete %}
                             <button type="button" class="flex flex-row cursor-not-allowed text-white rounded-lg px-4 py-2 bg-blue-300"
-                                title="Dieser Stand ist bereits gebucht" disabled>
+                                title="Profil unvollständig" disabled>
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
                                     class="mr-2 size-5">
                                     <path stroke-linecap="round" stroke-linejoin="round"
@@ -77,6 +108,16 @@
                             {% elif has_booking %}
                             <button type="button" class="flex flex-row cursor-not-allowed text-white rounded-lg px-4 py-2 bg-blue-300"
                                 title="Sie haben bereits einen Stand gebucht" disabled>
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+                                    class="mr-2 size-5">
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M13.5 21v-7.5a.75.75 0 0 1 .75-.75h3a.75.75 0 0 1 .75.75V21m-4.5 0H2.36m11.14 0H18m0 0h3.64m-1.39 0V9.349M3.75 21V9.349m0 0a3.001 3.001 0 0 0 3.75-.615A2.993 2.993 0 0 0 9.75 9.75c.896 0 1.7-.393 2.25-1.016a2.993 2.993 0 0 0 2.25 1.016c.896 0 1.7-.393 2.25-1.015a3.001 3.001 0 0 0 3.75.614m-16.5 0a3.004 3.004 0 0 1-.621-4.72l1.189-1.19A1.5 1.5 0 0 1 5.378 3h13.243a1.5 1.5 0 0 1 1.06.44l1.19 1.189a3 3 0 0 1-.621 4.72M6.75 18h3.75a.75.75 0 0 0 .75-.75V13.5a.75.75 0 0 0-.75-.75H6.75a.75.75 0 0 0-.75.75v3.75c0 .414.336.75.75.75Z" />
+                                </svg>
+                                Stand buchen
+                            </button>
+                            {% elif not booth.available %}
+                            <button type="button" class="flex flex-row cursor-not-allowed text-white rounded-lg px-4 py-2 bg-blue-300"
+                                title="Dieser Stand ist bereits gebucht" disabled>
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
                                     class="mr-2 size-5">
                                     <path stroke-linecap="round" stroke-linejoin="round"

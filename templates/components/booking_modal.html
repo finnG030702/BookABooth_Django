@@ -5,12 +5,12 @@
         <div class="mb-6 text-gray-800">
             <p>Sind Sie sich sicher, dass Sie diesen Stand kostenpflichtig buchen wollen?</p>
             <p class="mt-2">
-                Stand: <span id="modal-booth-title">[Booth-Title]</span><br />
-                Kosten: <span id="modal-price">[Preis]</span> €
+                Stand: <span id="modal-booth-title">{{ booth.title }}</span><br />
+                Kosten: <span id="modal-price">{{ booking.price }}</span> €
             </p>
             <p class="mt-4 text-sm text-gray-600">
-                Falls Sie den Stand stronieren, fallen Stornogebühren in Höhe von <span id="modal-cancellation-percent">[Prozent]</span>% des Buchungspreises an. Bei einer 
-                Stornierung nach dem <span id="modal-cancellation-date">[Datum]</span> wird der gesamte Betrag fällig. 
+                Falls Sie den Stand stornieren, fallen Stornogebühren in Höhe von {{ system.cancellation_reimbursement }} % des Buchungspreises an. Bei einer 
+                Stornierung nach dem {{ system.cancellation_reimbursement_until|date:"d.m.Y" }} wird der gesamte Betrag fällig. 
             </p>
 
             <div class="mt-6 flex items-center">
