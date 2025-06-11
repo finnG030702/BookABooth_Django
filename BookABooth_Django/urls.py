@@ -15,7 +15,7 @@ from .views import (BookABoothView, HomeView,
                     ServicepackageUpdateView, ServicepackageDeleteView,
                     BookingListView, BookingDetailView, BookingCancelView,
                     CompanyDetailView, CompanyUpdateView,
-                    WaitingListView, TermsResetView,
+                    WaitingListView, TermsResetView, send_waitinglist_email,
                     ProfileView, add_to_waiting_list, booking_modal, verify_email, confirm_booking,
                     )
 
@@ -73,6 +73,7 @@ urlpatterns = [
     path("api/waitinglist/", WaitingListView.waitinglist_table_partial, name="waitinglist_partial"),
     path("waitinglist/add/<int:company_id>", WaitingListView.add_to_waitinglist, name="add_to_waitinglist"),
     path("waitinglist/remove/<int:company_id>", WaitingListView.remove_from_waitinglist, name="remove_from_waitinglist"),
+    path("waitinglist/send-emails/", send_waitinglist_email, name="send-waitinglist-email"),
 
     path("accept-privacy-policy/", views.accept_privacy_policy, name="accept_privacy_policy"),
     path("privacy-policy/", TermsResetView.as_view(), name="privacyPolicy"),

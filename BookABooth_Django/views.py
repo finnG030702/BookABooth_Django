@@ -413,6 +413,43 @@ class WaitingListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
         company.save()
         companies = Company.objects.order_by('-waiting_list', 'id')
         return render(request, "adminMenu/waitingList/waitinglist_table_body.html", {"companies": companies})
+    
+    def notify_waitinglist_companies(request):
+        companies = Company.objects.filter(waiting_list=True)
+
+        for company in companies:
+            users = company.employees.all()
+            for user in users:
+                message = (
+                    f"Moin {user.username},\n\n"
+                    "Sie stehen beim diesjährigen Jade Karrieretag auf der Warteliste. "
+                    "Soeben sind wieder Stände zur Buchung verfügbar geworden.\n"
+                    "Eine Reservierung kann über das Buchungstool durchgeführt werden.\n\n"
+                    "Sollten Sie diese Benachrichtigungen nicht mehr empfangen wollen, "
+                    "können Sie sich im Buchungstool von der Warteliste entfernen.\n\n"
+                    "Mit freundlichen Grüßen\n"
+                    "Jade Hochschule"
+                )
+                send_mail(
+                    subject="Jade Karrieretag Warteliste",
+                    message=message,
+                    from_email="noreply@bookabooth.de",
+                    recipient_list=[user.email],
+                    fail_silently=False,
+                )
+
+@login_required
+@require_POST
+def send_waitinglist_email(request):
+    if not request.user.is_superuser:
+        return JsonResponse({"success": False, "message": "Nicht autorisiert"}, status=403)
+    
+    WaitingListView.notify_waitinglist_companies(request)
+    messages.success(request, "Unternehmen auf Warteliste wurden benachrichtigt.")
+    
+    response = HttpResponse(status=204)
+    response['HX-Redirect'] = reverse("waitingList")
+    return response
 
 class TermsResetView(LoginRequiredMixin, UserPassesTestMixin, View):
     template_name = "adminMenu/privacyPolicy/privacyPolicy.html"
