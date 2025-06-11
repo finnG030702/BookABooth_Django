@@ -829,3 +829,6 @@ def confirm_booking(request, booth_id):
     response = HttpResponse()
     response['HX-Redirect'] = reverse('home')
     return response
+
+def exhibitor_info(request):
+    return render(request, "components/ausstellerinfo.html")

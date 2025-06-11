@@ -38,13 +38,13 @@
 </div>
 
 <div id="info-modal" class="fixed inset-0 z-50 hidden bg-black/40 flex items-center justify-center">
-    <div class="bg-white rounded-lg p-6 max-w-md w-full shadow-lg">
+    <div class="bg-white rounded-lg p-6 max-w-[75%] h-[80%] shadow-lg">
         <h3 class="text-lg font-semibold- mb-4">Ausstellerbedingungen</h3>
-        <div class="overflow-y-auto max-h-96">
-            <p>Ausstellerbedingungen ... </p>
+        <div class="overflow-y-auto max-h-[85%]">
+            {% include 'components/ausstellerinfo_modal.html' %}
         </div>
         <div class="flex justify-end mt-6">
-            <button id="close-info-btn" class="bg-green-500 px-4 py-2 rounded text-white hover:bg-green-700">
+            <button id="close-info-btn" class="bg-green-500 px-4 py-2 rounded text-white hover:bg-green-700 cursor-pointer">
                 Ok
             </button>
         </div>
