@@ -13,8 +13,11 @@ from django.views import View
 from django.views.decorators.http import require_POST
 from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseForbidden, HttpResponseRedirect, JsonResponse
 from django.core.mail import send_mail
+from django.db.models import Prefetch, Count, Q
 from types import SimpleNamespace
 from decimal import Decimal
+from openpyxl import Workbook
+from openpyxl.utils import get_column_letter
 from django.views.generic import TemplateView, CreateView, ListView, DetailView, UpdateView, DeleteView
 from django.contrib.auth.views import LoginView, PasswordChangeView, PasswordResetView, PasswordResetCompleteView, PasswordResetDoneView, PasswordResetConfirmView
 from .forms import CompanyForm, CustomPasswordResetForm, CustomUserChangeForm, CustomUserCreationForm, CustomUserLoginForm, CustomPasswordChangeForm, CustomPasswordResetConfirmForm, LocationForm, BoothForm, ServicePackageForm, CustomCompanyChangeForm
@@ -46,6 +49,9 @@ def add_to_waiting_list(request):
     return JsonResponse({"success": False, "error": "Kein Unternehmen gefunden"}, status=400)
 
 class HomeView(TemplateView):
+    """
+    View for the homepage. Contains data for User-Checklist and for Admin-Panel.
+    """
     template_name = "home.html"
 
     def get_context_data(self, **kwargs):
@@ -74,12 +80,71 @@ class HomeView(TemplateView):
 
             booking_status = None
             if company:
-                latest_booking = company.companies.order_by('-received').first()
+                latest_booking = company.bookings.order_by('-received').first()
                 if latest_booking:
                     booking_status = latest_booking.status.upper()
             
             checklist["bookingStatus"] = booking_status
             context["checklist"] = SimpleNamespace(**checklist)
+
+        elif user.is_authenticated and user.is_staff:
+            locations = Location.objects.annotate(
+                total_booths=Count('booths'),
+                booked_booths=Count('booths__bookings', filter=Q(booths__bookings__status='confirmed'))
+            )
+
+            location_data = []
+            for loc in locations:
+                total = loc.total_booths or 0
+                booked = loc.booked_booths or 0
+                percent = (booked / total * 100) if total > 0 else 0
+                location_data.append({
+                    "name": loc.location,
+                    "total_booths": total,
+                    "booked_booths": booked,
+                    "percent_booked": percent,
+                })
+
+            companies = Company.objects.prefetch_related(
+                'employees',
+                Prefetch(
+                    'bookings',
+                    queryset=Booking.objects.select_related('booth__location')
+                )
+            ).all()
+
+            company_data = []
+            for company in companies:
+                company_data.append({
+                    "name": company.name,
+                    "billing_address": bool(company.billing_address),
+                    "logo": bool(company.logo),
+                    "description": bool(company.description),
+                    "phone": bool(company.employees.first().phone),
+                    "bookings": company.bookings.all(),
+                })
+            
+            user_with_email = User.objects.filter(
+                Q(email__isnull=False) & ~Q(email='') & Q(is_superuser=False)
+            )
+            mail_recipients = user_with_email.values_list('email', flat=True)
+            mailto_all = "mailto:" + ";".join(mail_recipients)
+
+            incomplete_users = user_with_email.filter(
+                Q(phone__isnull=True) | Q(phone__exact='') |
+                Q(company__billing_address__isnull=True) | Q(company__billing_address__exact='') |
+                Q(company__logo__isnull=True) | 
+                Q(company__description__isnull=True) | Q(company__description__exact='')
+            )
+            incomplete_recipients = incomplete_users.values_list('email', flat=True)
+            mailto_incomplete = "mailto:" + ";".join(incomplete_recipients)
+
+            context["admin_location_data"] = location_data
+            context["admin_company_data"] = company_data
+            context["total_mail"] = user_with_email.count()
+            context["incomplete_mail"] = incomplete_users.count()
+            context["mailto_all"] = mailto_all
+            context["mailto_incomplete"] = mailto_incomplete
 
         return context
 
@@ -832,3 +897,69 @@ def confirm_booking(request, booth_id):
 
 def exhibitor_info(request):
     return render(request, "components/ausstellerinfo.html")
+
+def export_to_excel(request):
+    response = HttpResponse(content_type='application/ms-excel')
+    filename = f"Buchungen-{timezone.now().strftime('%Y-%m-%d')}.xlsx"
+    response["Content-Disposition"] = f"attachment; filename=\"{filename}\""
+
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "Buchungen"
+
+    headers = ["Firmenname", "Ansprechpartner", "Rechnungsadresse", "Bemerkung", "Standnummer", "Preis", "Stornierung", "Rechnungsnummer", "Innenauftrag", "Kundennummer"]
+    ws.append(headers)
+
+    bookings = Booking.objects.select_related(
+        'booth__location',
+        'company'
+    ).all()
+
+    for b in bookings:
+        # Get every employee of a company
+        employees = b.company.employees.all() if b.company else []
+
+        # bring the user into lastname, firstname (phone)-format
+        if employees:
+            user = employees[0]
+            parts = []
+            if user.last_name:
+                parts.append(user.last_name)
+            if user.first_name:
+                parts.append(user.first_name)
+            ansprechpartner = ", ".join(parts)
+            if user.phone:
+                ansprechpartner += f" ({user.phone})"
+        else:
+            ansprechpartner = ""
+
+        ws.append([
+            b.company.name if b.company else "",
+            ansprechpartner,
+            b.company.billing_address if b.company and hasattr(b.company, "billing_address") else "",
+            b.company.comment if b.company and hasattr(b.company, "comment") else "",
+            f"{b.booth.location.location} - {b.booth.title}" if b.booth and b.booth.location else "",
+            b.price if hasattr(b, "price") else None,
+            b.cancellationfee if hasattr(b, "cancellationfee") else None
+        ])
+
+        last_row = ws.max_row
+        for col_letter in ['F', 'G']:
+            cell = ws[f"{col_letter}{last_row}"]
+            if isinstance(cell.value, (int, float)):
+                cell.number_format = '#.##0,00'
+
+    for col in ws.columns:
+        max_length = 0
+        column = get_column_letter(col[0].column)
+        for cell in col:
+            try:
+                if cell.value:
+                    max_length = max(max_length, len(str(cell.value)))
+            except:
+                pass
+        adjusted_width = (max_length + 2)
+        ws.column_dimensions[column].width = adjusted_width
+
+    wb.save(response)
+    return response

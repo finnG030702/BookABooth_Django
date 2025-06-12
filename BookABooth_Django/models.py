@@ -28,8 +28,8 @@ class Booking(models.Model): # TODO: Kommentare für Models überarbeiten
     confirmed = models.DateTimeField(blank=True, null=True)
     price = models.DecimalField(max_digits=21, decimal_places=2, blank=True, null=True)
     cancellationfee = models.DecimalField(max_digits=21, decimal_places=2, blank=True, null=True)
-    company = models.ForeignKey('Company', on_delete=models.DO_NOTHING, related_name="companies")
-    booth = models.ForeignKey('Booth', on_delete=models.SET_NULL, null=True, blank=True, related_name="booths")
+    company = models.ForeignKey('Company', on_delete=models.DO_NOTHING, related_name="bookings")
+    booth = models.ForeignKey('Booth', on_delete=models.SET_NULL, null=True, blank=True, related_name="bookings") # TODO: Nochmal related_names richtig machen.
 
     def cancel(self, canceled_by_admin=False):
 

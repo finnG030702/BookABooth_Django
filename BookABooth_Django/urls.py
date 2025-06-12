@@ -16,7 +16,7 @@ from .views import (BookABoothView, HomeView,
                     BookingListView, BookingDetailView, BookingCancelView,
                     CompanyDetailView, CompanyUpdateView,
                     WaitingListView, TermsResetView, send_waitinglist_email,
-                    ProfileView, add_to_waiting_list, booking_modal, verify_email, confirm_booking, exhibitor_info,
+                    ProfileView, add_to_waiting_list, booking_modal, verify_email, confirm_booking, exhibitor_info, export_to_excel,
                     )
 
 urlpatterns = [
@@ -83,4 +83,5 @@ urlpatterns = [
     path("bookabooth/booking-modal/<int:booth_id>/confirm/", confirm_booking, name="confirm_booking"),
 
     path("ausstellerinfos/", exhibitor_info, name="exhibitor_info"),
+    path("export-bookings/", export_to_excel, name="export-excel")
 ]

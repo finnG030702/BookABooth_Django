@@ -35,7 +35,8 @@
 
     <div class="flex-1 bg-white p-6">
         <h1 class="text-6xl font-light mb-4">Willkommen {{ user }}!</h1>
-        <p class="font-light mt-2 text-xl">Hier entsteht das Admin-Panel</p>
+        <br>
+        {% include "components/admin_panel.html" %}
     </div>
 
     {% else %}
