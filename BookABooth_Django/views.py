@@ -13,7 +13,7 @@ from django.views import View
 from django.views.decorators.http import require_POST
 from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseForbidden, HttpResponseRedirect, JsonResponse
 from django.core.mail import send_mail
-from django.db.models import Prefetch, Count, Q
+from django.db.models import Prefetch, Count, Q, Exists, OuterRef, Subquery
 from types import SimpleNamespace
 from decimal import Decimal
 from openpyxl import Workbook
@@ -963,3 +963,25 @@ def export_to_excel(request):
 
     wb.save(response)
     return response
+
+def exhibitorlistView(request):
+    confirmed_bookings = Booking.objects.filter(company=OuterRef('pk'), status='confirmed')
+    booth_subquery = Booking.objects.filter(company=OuterRef('pk'), status='confirmed').values('booth__title')[:1]
+    location_subquery = Booking.objects.filter(company=OuterRef('pk'), status='confirmed').values('booth__location__location')[:1]
+
+    companies = Company.objects.filter(
+        exhibitor_list=True,
+        logo__isnull=False,
+        description__isnull=False
+    ).annotate(
+        has_confirmed_booking=Exists(confirmed_bookings),
+        booth_title=Subquery(booth_subquery),
+        location_location=Subquery(location_subquery),
+    ).filter(
+        has_confirmed_booking=True
+    )
+
+    for company in companies:
+        company.show_toggle = len(company.description) > 300
+
+    return render(request, "exhibitor_list.html", {"companies": companies})

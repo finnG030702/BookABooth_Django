@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="max-w mx-auto mt-10 p-6 bg-white rounded-lg shadow-md">
+    <div class="flex justify-between items-center mb-4">
+        <h1 class="text-3xl font-semibold mb-6 text-center">Ausstellerliste</h1>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {% for company in companies %}
+        <!-- Logo-Area -->
+        <div class="rounded-xl shadow flex flex-col overflow-hidden">
+            <div class="bg-gray-100 flex items-center justify-center p-6 h-48">
+                {% if company.logo %}
+                <img src="{{ company.logo.url }}" alt="{{ company.name }}" class="object-contain max-h-full max-w-full" />
+                {% else %}
+                <div class="w-full h-full bg-gray-200 rounded flex items-center justify-center text-gray-500">
+                    Kein logo
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Text-Area -->
+            <div class="bg-white px-4 py-5 flex flex-col flex-grow">
+                <h2 class="text-lg font-bold mb-2">{{ company.name }}</h2>
+                <div id="desc-{{ company.id }}" class="transition-max-height overflow-hidden" style="max-height:4.5rem;">
+                    {{ company.description|linebreaksbr }}
+                </div>
+                {% if company.show_toggle %}
+                <button
+                    type="button"
+                    id="toggle-{{ company.id }}"
+                    class="text-blue-600 hover:underline mt-2 cursor-pointer text-left"
+                    onclick="
+                        const desc = document.getElementById('desc-{{ company.id }}');
+                        const btn = this;
+                        if (desc.style.maxHeight === '4.5rem' || !desc.style.maxHeight) {
+                            desc.style.maxHeight = '1000px';
+                            btn.innerText = 'Weniger anzeigen';
+                        } else {
+                            desc.style.maxHeight = '4.5rem';
+                            btn.innerText = 'Mehr anzeigen';
+                        }
+                    "
+                >
+                    Mehr anzeigen
+                </button>
+                {% endif %}
+                <p class="font-medium text-gray-900 mt-auto">Stand: {{ company.location_location }} - {{ company.booth_title }}</p>
+            </div>
+        </div>
+        {% empty %}
+        <p class="col-span-3 text-center text-gray-500">Noch keine Aussteller verfügbar.</p>
+        {% endfor %}
+    </div>
+</div>
+
+{% endblock %}
