@@ -16,7 +16,7 @@ def delete_blocked_bookings():
             booking.booth.available = True
             booking.booth.save()
 
-    deleted_count, _ = expired_bookings.delete()
+    deleted_count = expired_bookings.delete()
     print(f'[Scheduler] Deleted {deleted_count} blocked bookings')
 
 scheduler = BackgroundScheduler()
