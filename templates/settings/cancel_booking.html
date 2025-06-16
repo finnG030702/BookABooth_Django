@@ -6,26 +6,26 @@
         <h2 class="text-xl font-semibold mb-4">Sind Sie sicher, dass Sie Ihre Standbuchung stornieren wollen?</h2>
         <p>Wenn Sie fortfahren, kann Ihr gewählter Stand von anderen Unternehmen gebucht werden.</p><br>
         <p class="mb-4">
-            Es fallen Stornogebühren in Höhe von <strong>50% irgendwie ermitteln</strong> des Buchungspreises an. Bei einer Stornierung nach dem <strong>Datum finden</strong> wird der gesamte Betrag fällig.
-            Ihnen entstehen <strong>0,00€</strong> Stornogebühren.<br></br>
+            Es fallen Stornogebühren in Höhe von <strong>{{ system.cancellation_reimbursement }} %</strong> des Buchungspreises an. Bei einer Stornierung nach dem <strong>{{ system.cancellation_reimbursement_until|date:"d.m.Y" }}</strong> wird der gesamte Betrag fällig.
+            Ihnen entstehen <strong>{{ cancellation_fee }} €</strong> Stornogebühren.<br></br>
             Ihr Benutzerkonto bleibt bestehen und Sie haben die Möglichkeit, andere freie Stände zu buchen. 
         </p>
         <form method="post" hx-post="{% url 'profile' %}">
             {% csrf_token %}
             <div class="flex justify-end">
                 <button 
-                    type="submit" 
-                    name="cancel_booking" 
-                    class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded mr-2 cursor-pointer"
-                >
-                    Buchung stornieren
-                </button>
-                <button 
                     type="button" 
                     onclick="this.closest('.modal').remove()" 
-                    class="modal-close bg-gray-300 hover:bg-gray-400 px-4 py-2 rounded cursor-pointer"
+                    class="modal-close bg-gray-300 hover:bg-gray-400 px-4 py-2 mr-2 rounded cursor-pointer"
                 >
                     Abbrechen
+                </button>
+                <button 
+                    type="submit" 
+                    name="cancel_booking" 
+                    class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded cursor-pointer"
+                >
+                    Kostenpflichtig stornieren
                 </button>
             </div>
         </form>

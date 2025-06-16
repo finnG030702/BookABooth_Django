@@ -1,6 +1,10 @@
+APScheduler==3.11.0
 asgiref==3.8.1
 Django==5.2.1
 django-htmx==1.23.0
+et_xmlfile==2.0.0
+openpyxl==3.1.5
 pillow==11.2.1
 sqlparse==0.5.3
 tzdata==2025.2
+tzlocal==5.3.1

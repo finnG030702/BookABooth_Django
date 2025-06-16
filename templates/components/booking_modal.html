@@ -1,0 +1,52 @@
+<div id="booking-modal" data-booth-id="{{ booth.id }}" data-csrf-token="{{ csrf_token }}" class="fixed inset-0 z-50 hidden bg-black/40 flex items-center justify-center">
+    <div class="bg-white rounded-lg p-6 max-w-md w-full shadow-lg">
+        <h2 class="text-xl font-semibold mb-4">Buchung bestätigen</h2>
+
+        <div class="mb-6 text-gray-800">
+            <p>Sind Sie sich sicher, dass Sie diesen Stand kostenpflichtig buchen wollen?</p>
+            <p class="mt-2">
+                Stand: <span id="modal-booth-title">{{ booth.title }}</span><br />
+                Kosten: <span id="modal-price">{{ booking.price }}</span> €
+            </p>
+            <p class="mt-4 text-sm text-gray-600">
+                Falls Sie den Stand stornieren, fallen Stornogebühren in Höhe von {{ system.cancellation_reimbursement }} % des Buchungspreises an. Bei einer 
+                Stornierung nach dem {{ system.cancellation_reimbursement_until|date:"d.m.Y" }} wird der gesamte Betrag fällig. 
+            </p>
+
+            <div class="mt-6 flex items-center">
+                <input type="checkbox" id="confirmConditions" class="form-checkbox h-5 w-5 text-blue-600" />
+                <label for="confirmConditions" class="ml-2 text-gray-700 select-none">
+                    Ich habe die <button type="button" id="show-info-btn" class="hover:underline cursor-pointer text-red-600 hover:text-red-800">Ausstellerbedingungen</button> gelesen und akzeptiert.
+                </label>
+            </div>
+        </div>
+
+        <div class="flex justify-end space-x-4">
+            <button id="abort-btn" class="bg-gray-500 px-4 py-2 rounded text-white hover:bg-gray-700 cursor-pointer">
+                Abbrechen
+            </button>
+            <button id="confirm-btn"
+                    hx-post="/bookabooth/booking-modal/{{ booth.id }}/confirm/"
+                    hx-target="body"
+                    hx-swap="none"
+                    disabled class="bg-green-500 px-4 py-2 rounded text-white hover:bg-green-700 cursor-pointer disabled:cursor-not-allowed disabled:bg-green-300">
+                Buchung bestätigen
+            </button>
+        </div>
+
+    </div>
+</div>
+
+<div id="info-modal" class="fixed inset-0 z-50 hidden bg-black/40 flex items-center justify-center">
+    <div class="bg-white rounded-lg p-6 max-w-[75%] h-[80%] shadow-lg">
+        <h3 class="text-lg font-semibold- mb-4">Ausstellerbedingungen</h3>
+        <div class="overflow-y-auto max-h-[85%]">
+            {% include 'components/ausstellerinfo_modal.html' %}
+        </div>
+        <div class="flex justify-end mt-6">
+            <button id="close-info-btn" class="bg-green-500 px-4 py-2 rounded text-white hover:bg-green-700 cursor-pointer">
+                Ok
+            </button>
+        </div>
+    </div>
+</div>

@@ -1,6 +1,6 @@
 from django.urls import path
 from . import views
-from .views import (HomeView,
+from .views import (BookABoothView, HomeView,
                     CustomPasswordChangeView,
                     SignUpView,
                     LoginView,
@@ -13,10 +13,10 @@ from .views import (HomeView,
                     BoothListView, BoothCreateView, BoothDetailView, BoothUpdateView, BoothDeleteView,
                     ServicepackageListView, ServicepackageCreateView, ServicepackageDetailView,
                     ServicepackageUpdateView, ServicepackageDeleteView,
-                    BookingListView, BookingDetailView, BookingDeleteView,
+                    BookingListView, BookingDetailView, BookingCancelView,
                     CompanyDetailView, CompanyUpdateView,
-                    WaitingListView, TermsResetView,
-                    ProfileView, add_to_waiting_list, verify_email
+                    WaitingListView, TermsResetView, send_waitinglist_email,
+                    ProfileView, add_to_waiting_list, booking_modal, verify_email, confirm_booking, exhibitor_info, export_to_excel, exhibitorlistView
                     )
 
 urlpatterns = [
@@ -63,7 +63,7 @@ urlpatterns = [
     path("booking/", BookingListView.as_view(), name="booking_list"),
     path("api/booking_list/", BookingListView.booking_table_partial, name="booking_table_partial"),
     path("booking/<int:pk>/", BookingDetailView.as_view(), name="booking_detail"),
-    path("booking/<int:pk>/delete/", BookingDeleteView.as_view(), name="booking_delete"),
+    path("booking/<int:pk>/delete/", BookingCancelView.as_view(), name="booking_delete"),
 
     path("company/<int:pk>/", CompanyDetailView.as_view(), name="company_detail"),
     path("company/<int:pk>/edit/", CompanyUpdateView.as_view(), name="company_edit"),
@@ -73,7 +73,16 @@ urlpatterns = [
     path("api/waitinglist/", WaitingListView.waitinglist_table_partial, name="waitinglist_partial"),
     path("waitinglist/add/<int:company_id>", WaitingListView.add_to_waitinglist, name="add_to_waitinglist"),
     path("waitinglist/remove/<int:company_id>", WaitingListView.remove_from_waitinglist, name="remove_from_waitinglist"),
+    path("waitinglist/send-emails/", send_waitinglist_email, name="send-waitinglist-email"),
 
     path("accept-privacy-policy/", views.accept_privacy_policy, name="accept_privacy_policy"),
     path("privacy-policy/", TermsResetView.as_view(), name="privacyPolicy"),
+
+    path("bookabooth/", BookABoothView.as_view(), name="bookabooth"),
+    path("bookabooth/booking-modal/<int:booth_id>/", booking_modal, name="booking_modal"),
+    path("bookabooth/booking-modal/<int:booth_id>/confirm/", confirm_booking, name="confirm_booking"),
+
+    path("ausstellerinfos/", exhibitor_info, name="exhibitor_info"),
+    path("export-bookings/", export_to_excel, name="export-excel"),
+    path("ausstellerliste/", exhibitorlistView, name="exhibitorlist"),
 ]

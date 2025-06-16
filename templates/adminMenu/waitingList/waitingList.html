@@ -17,7 +17,7 @@
                 </svg>
                 Aktualisieren
             </button>
-            <button type="button" class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition cursor-pointer flex items-center gap-x-2">
+            <button type="button" hx-post="{% url 'send-waitinglist-email' %}" hx-trigger="click" hx-redirect="true" hx-swap="outerHTML" hx-target="body" class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition cursor-pointer flex items-center gap-x-2">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
                     class="size-6">
                     <path stroke-linecap="round" stroke-linejoin="round"

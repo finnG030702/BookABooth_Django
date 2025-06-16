@@ -1,6 +1,5 @@
 <div class="mt-6 space-y-2">
     <h2 class="text-lg font-semibold text-gray-800">Checkliste und Status:</h2>
-    <p>Check: {{ checklist }} </p>
 
     <!-- Registrierung -->
     <div
@@ -94,17 +93,22 @@
         <div class="flex justify-between items-center mb-2">
             <h3 class="font-medium text-gray-900">Buchung</h3>
             <small
-                class="{% if checklist.bookingStatus == 'CONFIRMED' %}text-green-600 {% else %}text-red-600 {% endif %}">
+                class="text-sm font-semibold {% if checklist.bookingStatus == 'CONFIRMED' %}text-green-600 {% else %}text-red-600 {% endif %}">
                 {% if checklist.bookingStatus == 'CONFIRMED' %}erledigt {% else %}offen {% endif %}
             </small>
         </div>
 
         {% if checklist.bookingStatus == 'CONFIRMED' %}
         <p class="mb-2 text-gray-800">
-            Sie haben einen Stand gebucht. Details finden Sie <a href="#"
+            Sie haben einen Stand gebucht. Details finden Sie <a href="{% url 'bookabooth' %}"
                 class="text-red-600 hover:underline font-semibold">hier</a>.<br />
             Sie können Ihre Buchung über Ihr <a href="{% url 'profile' %}"
                 class="text-red-600 hover:underline font-semibold">Profil</a> stornieren.
+        </p>
+
+        {% elif not checklist.privacyPolicy %}
+        <p class="mb-2 text-gray-800">
+            Die Nutzungsbedingungen wurden aktualisiert. Bitte akzeptieren Sie diese, um mit der Standbuchung fortzufahren.
         </p>
 
         {% elif not system.enabled %}
@@ -134,7 +138,7 @@
 
         {% elif checklist.bookingStatus == 'CANCELED' %}
         <p class="mb-2 text-gray-800">
-            Ihre Buchung wurde storniert. Sie können <a href="#" class="text-red-600 hover:underline font-semibold">hier</a> eine erneute Buchung vornehmen.
+            Ihre Buchung wurde storniert. Sie können <a href="{% url 'bookabooth' %}" class="text-red-600 hover:underline font-semibold">hier</a> eine erneute Buchung vornehmen.
         </p>
 
         {% elif checklist.bookingStatus == 'BLOCKED' %}
@@ -146,7 +150,7 @@
 
         {% elif checklist.bookingStatus == None and not checklist.allBoothsOccupied and checklist.address and checklist.logo and checklist.phone and checklist.description %}
         <p class="mb-2 text-gray-800">
-            Nehmen Sie Ihre Buchung <a href="#" class="text-red-600 hover:underline font-semibold">hier</a> vor.
+            Nehmen Sie Ihre Buchung <a href="{% url 'bookabooth' %}" class="text-red-600 hover:underline font-semibold">hier</a> vor.
         </p>
         {% endif %}
     </div>

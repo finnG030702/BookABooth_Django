@@ -1,7 +1,10 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+from django.core.mail import send_mail
+from django.utils import timezone
+from decimal import Decimal
 
-class Booking(models.Model):
+class Booking(models.Model): # TODO: Kommentare für Models überarbeiten
     """
     Booking, which will be created by users.
 
@@ -25,8 +28,52 @@ class Booking(models.Model):
     confirmed = models.DateTimeField(blank=True, null=True)
     price = models.DecimalField(max_digits=21, decimal_places=2, blank=True, null=True)
     cancellationfee = models.DecimalField(max_digits=21, decimal_places=2, blank=True, null=True)
-    company = models.ForeignKey('Company', on_delete=models.DO_NOTHING, related_name="companies")
-    booth = models.ForeignKey('Booth', on_delete=models.SET_NULL, null=True, blank=True, related_name="booths")
+    company = models.ForeignKey('Company', on_delete=models.DO_NOTHING, related_name="bookings")
+    booth = models.ForeignKey('Booth', on_delete=models.SET_NULL, null=True, blank=True, related_name="bookings") # TODO: Nochmal related_names richtig machen.
+
+    def cancel(self, canceled_by_admin=False):
+
+        self.status = 'canceled'
+
+        # Configure Reimbursement for cancellation. Including fallback, if SystemConfiguration is empty.
+        config = SystemConfiguration.objects.first()
+        if config:
+            reimbursement_percent = config.cancellation_reimbursement
+            reimbursement_until = config.cancellation_reimbursement_until
+
+            if timezone.now().date() <= reimbursement_until:
+                percentage = Decimal(100 - reimbursement_percent) / 100
+                self.cancellationfee = self.price * percentage
+            else:
+                self.cancellationfee = self.price
+        else:
+            self.cancellationfee = self.price
+
+        # TODO: Wird Cancellationfee auch gesetzt, wenn Admin Buchung storniert?
+        self.save()
+
+        booth = self.booth
+        booth.available = True
+        booth.save()
+
+        company = self.company
+        company.exhibitor_list = False
+        company.save()
+
+        if canceled_by_admin:
+            users = self.company.employees.all()
+            user = users.first() if users.exists() else None
+            send_mail(
+                subject="Django BookABooth - Ihre Buchung wurde storniert",
+                message=(
+                    f"Moin {user.username}, \n\n"
+                    f"Ihre Buchung für den Stand {booth.title} wurde von einem Administrator storniert.\n"
+                    f"Falls Sie Rückfragen haben, wenden Sie sich gerne an unser Team."
+                ),
+                from_email="noreply@bookabooth.de",
+                recipient_list=[user.email],
+                fail_silently=True,
+            )
 
 
 class Booth(models.Model):
@@ -83,6 +130,19 @@ class System(models.Model):
     def __str__(self):
         x = str(self.id)
         return x
+    
+class SystemConfiguration(models.Model):
+    """
+    To configure the reimbursement. Cancel-Modal will pull the values out of this model.
+
+    cancellation_reimbursement: The percentage of the booking price that is reimbursed when a booking is cancelled.
+    cancellation_reimbursement_until: The date until which the cancellation reimbursement is valid, after this date there is no reimbursement.
+    """
+    cancellation_reimbursement = models.PositiveIntegerField(default=100)
+    cancellation_reimbursement_until = models.DateField()
+
+    def __str__(self):
+        return "System Configuration"
     
 class User(AbstractUser):
     """

@@ -24,20 +24,20 @@
             />
             <div class="flex justify-end">
                 <button 
+                    type="button" 
+                    onclick="this.closest('.modal').remove()"
+                    class="modal-close bg-gray-300 hover:bg-gray-400 px-4 py-2 rounded mr-2 cursor-pointer"
+                >
+                    Abbrechen
+                </button>
+                <button 
                     id="submit-btn" 
                     type="submit" 
                     name="delete_account"
-                    class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded mr-2 cursor-pointer" 
+                    class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded cursor-pointer" 
                     disabled
                 >
                     Konto löschen
-                </button>
-                <button 
-                    type="button" 
-                    onclick="this.closest('.modal').remove()"
-                    class="modal-close bg-gray-300 hover:bg-gray-400 px-4 py-2 rounded cursor-pointer"
-                >
-                    Abbrechen
                 </button>
             </div>
         </form>
