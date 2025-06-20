@@ -1,6 +1,6 @@
 from django.contrib import messages
 from django.contrib.auth import get_user_model, logout, authenticate
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.tokens import default_token_generator
 from django.shortcuts import get_object_or_404, render, redirect
@@ -128,7 +128,7 @@ class HomeView(TemplateView):
                 Q(email__isnull=False) & ~Q(email='') & Q(is_superuser=False)
             )
             mail_recipients = user_with_email.values_list('email', flat=True)
-            mailto_all = "mailto:" + ";".join(mail_recipients)
+            mailto_all = "mailto:?bcc=" + ";".join(mail_recipients)
 
             incomplete_users = user_with_email.filter(
                 Q(phone__isnull=True) | Q(phone__exact='') |
@@ -137,7 +137,7 @@ class HomeView(TemplateView):
                 Q(company__description__isnull=True) | Q(company__description__exact='')
             )
             incomplete_recipients = incomplete_users.values_list('email', flat=True)
-            mailto_incomplete = "mailto:" + ";".join(incomplete_recipients)
+            mailto_incomplete = "mailto:?bcc=" + ";".join(incomplete_recipients)
 
             context["admin_location_data"] = location_data
             context["admin_company_data"] = company_data
@@ -898,6 +898,8 @@ def confirm_booking(request, booth_id):
 def exhibitor_info(request):
     return render(request, "components/ausstellerinfo.html")
 
+@login_required
+@user_passes_test(lambda u: u.is_superuser)
 def export_to_excel(request):
     response = HttpResponse(content_type='application/ms-excel')
     filename = f"Buchungen-{timezone.now().strftime('%Y-%m-%d')}.xlsx"
