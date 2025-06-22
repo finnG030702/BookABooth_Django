@@ -4,7 +4,8 @@ from django.core.mail import send_mail
 from django.utils import timezone
 from decimal import Decimal
 
-class Booking(models.Model): # TODO: Kommentare für Models überarbeiten
+
+class Booking(models.Model):  # TODO: Kommentare für Models überarbeiten
     """
     Booking, which will be created by users.
 
@@ -29,7 +30,8 @@ class Booking(models.Model): # TODO: Kommentare für Models überarbeiten
     price = models.DecimalField(max_digits=21, decimal_places=2, blank=True, null=True)
     cancellationfee = models.DecimalField(max_digits=21, decimal_places=2, blank=True, null=True)
     company = models.ForeignKey('Company', on_delete=models.DO_NOTHING, related_name="bookings")
-    booth = models.ForeignKey('Booth', on_delete=models.SET_NULL, null=True, blank=True, related_name="bookings") # TODO: Nochmal related_names richtig machen.
+    booth = models.ForeignKey('Booth', on_delete=models.SET_NULL, null=True, blank=True,
+                              related_name="bookings")  # TODO: Nochmal related_names richtig machen.
 
     def cancel(self, canceled_by_admin=False):
 
@@ -130,7 +132,8 @@ class System(models.Model):
     def __str__(self):
         x = str(self.id)
         return x
-    
+
+
 class SystemConfiguration(models.Model):
     """
     To configure the reimbursement. Cancel-Modal will pull the values out of this model.
@@ -143,7 +146,8 @@ class SystemConfiguration(models.Model):
 
     def __str__(self):
         return "System Configuration"
-    
+
+
 class User(AbstractUser):
     """
     User, which extends the already established Django-User. UUID and is_verified are managed ELSEWHERE
@@ -188,6 +192,7 @@ class ServicePackage(models.Model):
 
     def __str__(self):
         return self.name
+
 
 class TermsUpdateLog(models.Model):
     """

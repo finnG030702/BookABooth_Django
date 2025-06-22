@@ -19,26 +19,35 @@ from decimal import Decimal
 from openpyxl import Workbook
 from openpyxl.utils import get_column_letter
 from django.views.generic import TemplateView, CreateView, ListView, DetailView, UpdateView, DeleteView
-from django.contrib.auth.views import LoginView, PasswordChangeView, PasswordResetView, PasswordResetCompleteView, PasswordResetDoneView, PasswordResetConfirmView
-from .forms import CompanyForm, CustomPasswordResetForm, CustomUserChangeForm, CustomUserCreationForm, CustomUserLoginForm, CustomPasswordChangeForm, CustomPasswordResetConfirmForm, LocationForm, BoothForm, ServicePackageForm, CustomCompanyChangeForm
+from django.contrib.auth.views import LoginView, PasswordChangeView, PasswordResetView, PasswordResetCompleteView, \
+    PasswordResetDoneView, PasswordResetConfirmView
+from .forms import CompanyForm, CustomPasswordResetForm, CustomUserChangeForm, CustomUserCreationForm, \
+    CustomUserLoginForm, CustomPasswordChangeForm, CustomPasswordResetConfirmForm, LocationForm, BoothForm, \
+    ServicePackageForm, CustomCompanyChangeForm
 from .models import Company, System, Location, Booth, ServicePackage, Booking, SystemConfiguration, TermsUpdateLog
 
 User = get_user_model()
 
 
-# Create your views here.
-
 @login_required
 @require_POST
 def accept_privacy_policy(request):
+    """
+    Called when User accepts privacy policy.
+    Sets flag to True and redirects to homepage.
+    """
     user = request.user
     user.privacy_policy_accepted = True
     user.save()
     return redirect("home")
 
+
 @login_required
 @require_POST
 def add_to_waiting_list(request):
+    """
+    Sets flag for Waiting List to True.
+    """
     user = request.user
     if hasattr(user, "company"):
         company = user.company
@@ -47,6 +56,7 @@ def add_to_waiting_list(request):
         messages.success(request, "Sie wurden der Warteliste hinzugefügt.")
         return JsonResponse({"success": True})
     return JsonResponse({"success": False, "error": "Kein Unternehmen gefunden"}, status=400)
+
 
 class HomeView(TemplateView):
     """
@@ -58,17 +68,16 @@ class HomeView(TemplateView):
         context = super().get_context_data(**kwargs)
 
         system = System.objects.get(id=1)
-        context["system"] = system or System(enabled=False) # Check if booking is enabled / disabled by default
+        context["system"] = system or System(enabled=False)  # Check if booking is enabled / disabled by default
 
         user = self.request.user
 
         if user.is_authenticated and not user.is_staff:
             company = getattr(user, "company", None)
 
-
             checklist = {
-                "registered": True, # Account is created
-                "verified": user.is_active, # E-Mail verification completed
+                "registered": True,  # Account is created
+                "verified": user.is_active,  # E-Mail verification completed
                 "phone": bool(user.phone),
                 "address": bool(company and company.billing_address),
                 "logo": bool(company and company.logo),
@@ -83,7 +92,7 @@ class HomeView(TemplateView):
                 latest_booking = company.bookings.order_by('-received').first()
                 if latest_booking:
                     booking_status = latest_booking.status.upper()
-            
+
             checklist["bookingStatus"] = booking_status
             context["checklist"] = SimpleNamespace(**checklist)
 
@@ -123,7 +132,7 @@ class HomeView(TemplateView):
                     "phone": bool(company.employees.first().phone),
                     "bookings": company.bookings.all(),
                 })
-            
+
             user_with_email = User.objects.filter(
                 Q(email__isnull=False) & ~Q(email='') & Q(is_superuser=False)
             )
@@ -133,7 +142,7 @@ class HomeView(TemplateView):
             incomplete_users = user_with_email.filter(
                 Q(phone__isnull=True) | Q(phone__exact='') |
                 Q(company__billing_address__isnull=True) | Q(company__billing_address__exact='') |
-                Q(company__logo__isnull=True) | 
+                Q(company__logo__isnull=True) |
                 Q(company__description__isnull=True) | Q(company__description__exact='')
             )
             incomplete_recipients = incomplete_users.values_list('email', flat=True)
@@ -148,9 +157,11 @@ class HomeView(TemplateView):
 
         return context
 
+
 class SignUpView(CreateView):
     """
-    View for registration of a new user. The company comes from a different model.
+    View for registration of a new user.
+    CustomUserCreationForm adds Company name to User data
     """
     form_class = CustomUserCreationForm
     success_url = reverse_lazy("login")
@@ -158,7 +169,8 @@ class SignUpView(CreateView):
 
     def form_valid(self, form):
         company_name = form.cleaned_data["company_name"]
-        company, _ = Company.objects.get_or_create(name=company_name) # Gibt Company und ein Boolean zurück. _ weil created (bool) egal ist.
+        company, _ = Company.objects.get_or_create(
+            name=company_name)  # Returns company and a boolean
 
         user = form.save(commit=False)
         user.company = company
@@ -169,10 +181,15 @@ class SignUpView(CreateView):
         self.object = user
         self.send_verification_email(user)
 
-        messages.success(self.request, "Registrierung erfolgreich! Bitte überprüfen Sie Ihre E-Mails zur Verifizierung.")
+        messages.success(self.request,
+                         "Registrierung erfolgreich! Bitte überprüfen Sie Ihre E-Mails zur Verifizierung.")
         return HttpResponseRedirect(self.get_success_url())
-    
+
     def send_verification_email(self, user):
+        """
+        Sets up token, uid and link for verification.
+        Sends the verification email.
+        """
         token = default_token_generator.make_token(user)
         uid = urlsafe_base64_encode(force_bytes(user.pk))
         verification_link = self.request.build_absolute_uri(
@@ -189,17 +206,19 @@ class SignUpView(CreateView):
             from_email="noreply@bookabooth.de",
             recipient_list=[user.email],
         )
-    
+
+
 def verify_email(request, uidb64, token):
     """
-    Verification for Mail sent in Signup. Might work.
+    Verifies, if the verification mail is valid.
+    Returns a corresponding success / failure template.
     """
     try:
         uid = urlsafe_base64_decode(uidb64).decode()
         user = User.objects.get(pk=uid)
     except (TypeError, ValueError, OverflowError, User.DoesNotExist):
         user = None
-    
+
     token_valid = user and default_token_generator.check_token(user, token)
     if token_valid:
         user.is_active = True
@@ -208,13 +227,15 @@ def verify_email(request, uidb64, token):
     else:
         return render(request, "registration/verify_failed.html")
 
-class LoginView(LoginView):
+
+class UserloginView(LoginView):
     """
     View for the Login of a user. If logged in, reverts back to home.html
     """
     form_class = CustomUserLoginForm
     success_url = reverse_lazy("login")
     template_name = "registration/login.html"
+
 
 class CustomPasswordChangeView(PasswordChangeView):
     """
@@ -223,23 +244,41 @@ class CustomPasswordChangeView(PasswordChangeView):
     form_class = CustomPasswordChangeForm
     template_name = 'registration/password_change_form.html'
 
+
 class PasswortResetView(PasswordResetView):
+    """
+    View for the Password Reset
+    """
     template_name = "registration/password_reset.html"
     form_class = CustomPasswordResetForm
 
+
 class PasswordResetDoneView(PasswordResetDoneView):
+    """
+    Is called when the password reset link is sent.
+    """
     template_name = "registration/password_reset_done.html"
 
+
 class PasswordResetConfirmView(PasswordResetConfirmView):
+    """
+    Is called when the password reset link is used.
+    """
     template_name = "registration/password_reset_confirm.html"
     form_class = CustomPasswordResetConfirmForm
 
+
 class PasswordResetCompleteView(PasswordResetCompleteView):
+    """
+    Is called when the password was successfully reset.
+    """
     template_name = "registration/password_reset_complete.html"
+
 
 class SystemToggleView(LoginRequiredMixin, UserPassesTestMixin, View):
     """
     View for the SystemToggle.html. Changes the enabled-Attribute of system in its response.
+    LoginRequiredMixin and UserPassesTestMixin secure the page and make it only viewable for superuser.
     """
     template_name = "adminMenu/system/system_toggle.html"
 
@@ -247,17 +286,27 @@ class SystemToggleView(LoginRequiredMixin, UserPassesTestMixin, View):
         return self.request.user.is_superuser
 
     def get(self, request):
+        """
+        Gets the System model from the database.
+        """
         system = System.objects.first()
         return render(request, self.template_name, {"system": system})
-    
+
     def post(self, request):
+        """
+        Changes the enabled-Attribute of system in its response.
+        """
         system = System.objects.first()
         enabled = request.POST.get("enabled") == "on"
         system.enabled = enabled
         system.save()
         return render(request, "adminMenu/system/_system_status.html", {"system": system})
-    
+
+
 class LocationListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
+    """
+    Returns a List of locations from the database.
+    """
     model = Location
     template_name = "adminMenu/location/location_list.html"
     context_object_name = 'locations'
@@ -266,10 +315,17 @@ class LocationListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
         return self.request.user.is_superuser
 
     def location_table_partial(request):
+        """
+        Partial HTML-Template, which is returned when the admin uses the refresh-button on the ListView.
+        """
         locations = Location.objects.all()
         return render(request, "adminMenu/location/location_table_body.html", {"locations": locations})
 
+
 class LocationCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
+    """
+    Creates a new Location.
+    """
     model = Location
     form_class = LocationForm
     template_name = "adminMenu/location/location_form.html"
@@ -278,14 +334,22 @@ class LocationCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     def test_func(self):
         return self.request.user.is_superuser
 
+
 class LocationDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
+    """
+    Shows details about a selected Location.
+    """
     model = Location
     template_name = "adminMenu/location/location_detail.html"
 
     def test_func(self):
         return self.request.user.is_superuser
 
+
 class LocationUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
+    """
+    Updates a selected Location.
+    """
     model = Location
     form_class = LocationForm
     template_name = "adminMenu/location/location_form.html"
@@ -294,7 +358,11 @@ class LocationUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     def test_func(self):
         return self.request.user.is_superuser
 
+
 class LocationDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
+    """
+    Deletes a selected Location.
+    """
     model = Location
     success_url = reverse_lazy("location_list")
 
@@ -303,8 +371,12 @@ class LocationDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
 
     def delete(self, request, *args, **kwargs):
         return super().delete(request, *args, **kwargs)
-    
+
+
 class BoothListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
+    """
+    Shows a list of all booths.
+    """
     model = Booth
     template_name = "adminMenu/booth/booth_list.html"
     context_object_name = 'booths'
@@ -315,8 +387,12 @@ class BoothListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
     def booth_table_partial(request):
         booths = Booth.objects.all()
         return render(request, "adminMenu/booth/booth_table_body.html", {"booths": booths})
-    
+
+
 class BoothCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
+    """
+    Creates a new booth.
+    """
     model = Booth
     form_class = BoothForm
     template_name = "adminMenu/booth/booth_form.html"
@@ -325,14 +401,22 @@ class BoothCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     def test_func(self):
         return self.request.user.is_superuser
 
+
 class BoothDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
+    """
+    Shows details about a selected Booth.
+    """
     model = Booth
     template_name = "adminMenu/booth/booth_detail.html"
 
     def test_func(self):
         return self.request.user.is_superuser
 
+
 class BoothUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
+    """
+    Updates a selected Booth.
+    """
     model = Booth
     form_class = BoothForm
     template_name = "adminMenu/booth/booth_form.html"
@@ -341,7 +425,11 @@ class BoothUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     def test_func(self):
         return self.request.user.is_superuser
 
+
 class BoothDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
+    """
+    Deletes a selected Booth.
+    """
     model = Booth
     success_url = reverse_lazy("booth_list")
 
@@ -350,8 +438,12 @@ class BoothDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
 
     def delete(self, request, *args, **kwargs):
         return super().delete(request, *args, **kwargs)
-    
+
+
 class ServicepackageListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
+    """
+    Shows a list of all Service-Packages.
+    """
     model = ServicePackage
     template_name = "adminMenu/servicepackage/servicepackage_list.html"
     context_object_name = 'servicepackages'
@@ -361,9 +453,14 @@ class ServicepackageListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
 
     def servicepackage_table_partial(request):
         servicepackages = ServicePackage.objects.all()
-        return render(request, "adminMenu/servicepackage/servicepackage_table_body.html", {"servicepackages": servicepackages})
-    
+        return render(request, "adminMenu/servicepackage/servicepackage_table_body.html",
+                      {"servicepackages": servicepackages})
+
+
 class ServicepackageCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
+    """
+    Creates a new Service-Package.
+    """
     model = ServicePackage
     form_class = ServicePackageForm
     template_name = "adminMenu/servicepackage/servicepackage_form.html"
@@ -372,14 +469,22 @@ class ServicepackageCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateVi
     def test_func(self):
         return self.request.user.is_superuser
 
+
 class ServicepackageDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
+    """
+    Shows details about a selected Service-Package.
+    """
     model = ServicePackage
     template_name = "adminMenu/servicepackage/servicepackage_detail.html"
 
     def test_func(self):
         return self.request.user.is_superuser
 
+
 class ServicepackageUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
+    """
+    Updates a selected Service-Package.
+    """
     model = ServicePackage
     form_class = ServicePackageForm
     template_name = "adminMenu/servicepackage/servicepackage_form.html"
@@ -388,7 +493,11 @@ class ServicepackageUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateVi
     def test_func(self):
         return self.request.user.is_superuser
 
+
 class ServicepackageDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
+    """
+    Deletes a selected Service-Package.
+    """
     model = ServicePackage
     success_url = reverse_lazy("servicepackage_list")
 
@@ -397,8 +506,12 @@ class ServicepackageDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteVi
 
     def delete(self, request, *args, **kwargs):
         return super().delete(request, *args, **kwargs)
-    
+
+
 class BookingListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
+    """
+    Shows a list of all Bookings.
+    """
     model = Booking
     template_name = "adminMenu/booking/booking_list.html"
     context_object_name = "bookings"
@@ -409,16 +522,26 @@ class BookingListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
     def booking_table_partial(request):
         bookings = Booking.objects.all()
         return render(request, "adminMenu/booking/booking_table_body.html", {'bookings': bookings})
-    
+
+
 class BookingDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
+    """
+    Details for a selected Booking.
+    """
     model = Booking
     template_name = "adminMenu/booking/booking_detail.html"
 
     def test_func(self):
         return self.request.user.is_superuser
 
+
 class BookingCancelView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     def post(self, request, *args, **kwargs):
+        """
+        Cancel a selected Booking.
+        Booking isn't deleted from the database, it's set to 'canceled'.
+        Cancel-Method is called from the model directly.
+        """
         booking = get_object_or_404(Booking, pk=kwargs['pk'])
 
         try:
@@ -432,14 +555,22 @@ class BookingCancelView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     def test_func(self):
         return self.request.user.is_superuser
 
+
 class CompanyDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
+    """
+    Shows details about a selected Company.
+    """
     model = Company
     template_name = "adminMenu/company/company_detail.html"
 
     def test_func(self):
         return self.request.user.is_superuser
 
+
 class CompanyUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
+    """
+    Updates a selected Company.
+    """
     model = Company
     form_class = CompanyForm
     template_name = "adminMenu/company/company_form.html"
@@ -449,8 +580,12 @@ class CompanyUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
 
     def get_success_url(self):
         return reverse_lazy('company_detail', kwargs={'pk': self.object.pk})
-    
+
+
 class WaitingListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
+    """
+    View for the Waiting List.
+    """
     model = Company
     template_name = "adminMenu/waitingList/waitingList.html"
     context_object_name = "companies"
@@ -459,27 +594,49 @@ class WaitingListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
         return self.request.user.is_superuser
 
     def get_queryset(self):
-        return Company.objects.order_by('-waiting_list', 'id')
+        """
+        Orders company by waiting_list-flag and by company name.
+        """
+        return Company.objects.order_by('-waiting_list', 'name')
 
     def waitinglist_table_partial(request):
-        companies = Company.objects.order_by('-waiting_list', 'id')
+        companies = Company.objects.order_by('-waiting_list', 'name')
         return render(request, "adminMenu/waitingList/waitinglist_table_body.html", {'companies': companies})
-    
+
+    # TODO: The message should pop up when the button is pressed. Currently only shows on page reload.
     def add_to_waitinglist(request, company_id):
+        """
+        Is called when company is added to waiting list.
+        """
         company = get_object_or_404(Company, id=company_id)
         company.waiting_list = True
         company.save()
-        companies = Company.objects.order_by('-waiting_list', 'id')
-        return render(request, "adminMenu/waitingList/waitinglist_table_body.html", {"companies": companies})
-    
+        messages.success(request, f"{company.name} wurde zur Warteliste hinzugefügt.")
+        return WaitingListView._render_table_and_message(request)
+
     def remove_from_waitinglist(request, company_id):
+        """
+        Is called when company is removed from waiting list.
+        """
         company = get_object_or_404(Company, id=company_id)
         company.waiting_list = False
         company.save()
-        companies = Company.objects.order_by('-waiting_list', 'id')
-        return render(request, "adminMenu/waitingList/waitinglist_table_body.html", {"companies": companies})
-    
+        messages.success(request, f"{company.name} wurde von der Warteliste entfernt.")
+        return WaitingListView._render_table_and_message(request)
+
+    def _render_table_and_message(request):
+        """
+        Renders the template depending on if a company was added or removed from waiting list.
+        """
+        companies = Company.objects.order_by('-waiting_list', 'name')
+        return render(request, "adminMenu/waitingList/waitinglist_table_body.html", {
+            'companies': companies
+        })
+
     def notify_waitinglist_companies(request):
+        """
+        Defines an email for every company on the waiting list.
+        """
         companies = Company.objects.filter(waiting_list=True)
 
         for company in companies:
@@ -503,20 +660,30 @@ class WaitingListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
                     fail_silently=False,
                 )
 
+
 @login_required
 @require_POST
 def send_waitinglist_email(request):
+    """
+    Sends an email to every company on the waiting list.
+    Every company receives its own email.
+    """
     if not request.user.is_superuser:
         return JsonResponse({"success": False, "message": "Nicht autorisiert"}, status=403)
-    
+
     WaitingListView.notify_waitinglist_companies(request)
     messages.success(request, "Unternehmen auf Warteliste wurden benachrichtigt.")
-    
+
     response = HttpResponse(status=204)
     response['HX-Redirect'] = reverse("waitingList")
     return response
 
+
 class TermsResetView(LoginRequiredMixin, UserPassesTestMixin, View):
+    """
+    View where the admin can reset the privacy_policy_accepted-flag for every user.
+    Adds a timestamp to the table on the page.
+    """
     template_name = "adminMenu/privacyPolicy/privacyPolicy.html"
 
     def test_func(self):
@@ -530,23 +697,34 @@ class TermsResetView(LoginRequiredMixin, UserPassesTestMixin, View):
         User.objects.update(privacy_policy_accepted=False)
         TermsUpdateLog.objects.create()
         return redirect("privacyPolicy")
-    
+
+
 class ProfileView(LoginRequiredMixin, View):
+    """
+    View for the User Profile page.
+    Is split into User data and Company data.
+    """
 
     def _get_company(self, user):
         """
         Gets the company to the corresponding user
         """
         return getattr(user, 'company', None)
-    
+
     def _has_booking(self, company, status):
+        """
+        Checks, if the company has a booking.
+        """
         if not company:
             return False
         return Booking.objects.filter(company=company, status__in=status).exists()
-    
+
     def _is_only_one_admin(self):
+        """
+        Checks, if the user is the only active admin in the database.
+        """
         return User.objects.filter(is_superuser=True, is_active=True).count() == 1
-    
+
     def _handle_redirect(self, request, url_name):
         """
         Returns HTMX-Redirect for HTMX-Requests. Otherwise, default Django-Redirect
@@ -558,22 +736,26 @@ class ProfileView(LoginRequiredMixin, View):
             return response
         else:
             return redirect(url)
-        
+
     def _calculate_cancellation_fee(self, booking, system_config):
         """
         Calculates the fee for canceling a booking.
         """
         if not booking or not system_config:
             return Decimal("0.00")
-        
+
         multiplier = Decimal("1.0")
 
         if timezone.now().date() <= system_config.cancellation_reimbursement_until:
             multiplier = Decimal(100 - system_config.cancellation_reimbursement) / Decimal(100)
 
         return (booking.price * multiplier).quantize(Decimal("0.01"))
-    
+
     def dispatch(self, request, *args, **kwargs):
+        """
+        Overridden dispatch method.
+        Redirects when a modal is called.
+        """
         action = kwargs.get('action')
         if action == 'modal_cancel_booking' and request.method == 'GET':
             return self.get_modal_cancel_booking(request)
@@ -594,9 +776,11 @@ class ProfileView(LoginRequiredMixin, View):
             "only_one_admin": self._is_only_one_admin() if user.is_superuser else False,
         }
         return render(request, "settings/profile.html", context)
-    
+
     def post(self, request, *args, **kwargs):
-        # Unterschied, welcher Button im Profil genutzt wird
+        """
+        Calls corresponding view function when button is clicked.
+        """
         if "cancel_booking" in request.POST:
             return self.cancel_booking(request)
         elif "leave_waiting_list" in request.POST:
@@ -605,8 +789,12 @@ class ProfileView(LoginRequiredMixin, View):
             return self.delete_account(request)
         else:
             return self.save(request)
-    
+
     def save(self, request):
+        """
+        Saves the form input.
+        Redirects to profile and shows a message if successful.
+        """
         user = request.user
         company = self._get_company(user)
 
@@ -618,26 +806,29 @@ class ProfileView(LoginRequiredMixin, View):
             messages.success(request, mark_safe(
                 f"<strong>Die Einstellungen wurden gespeichert.</strong> Weiter geht es auf der "
                 f"<a href='{reverse('home')}' class='text-blue-600 hover:underline'>Startseite</a>."
-                )
             )
+                             )
             if company_data:
                 company_data.save()
             return self._handle_redirect(request, 'profile')
-        
+
         context = {
             "user_data_form": user_data,
             "company_data_form": company_data
         }
         return render(request, "settings/profile.html", context)
-    
+
     def cancel_booking(self, request, *args, **kwargs):
+        """
+        Cancels a confirmed booking. Calls the cancel-method from the model.
+        """
         user = request.user
         company = self._get_company(user)
 
         if not company:
             messages.error(request, "Kein Unternehmen gefunden")
             return self._handle_redirect(request, 'profile')
-        
+
         try:
             booking = Booking.objects.get(company=company, status='confirmed')
         except Booking.DoesNotExist:
@@ -652,55 +843,69 @@ class ProfileView(LoginRequiredMixin, View):
 
         messages.success(request, "Ihre Buchung wurde storniert.")
         return self._handle_redirect(request, 'profile')
-    
+
     def leave_waiting_list(self, request, *args, **kwargs):
+        """
+        Sets the company waiting_list-flag to false.
+        """
         user = request.user
         company = self._get_company(user)
 
         if not company:
             messages.error(request, "Kein Unternehmen gefunden.")
             return self._handle_redirect(request, 'profile')
-        
+
         if not company.waiting_list:
             messages.info(request, "Sie stehen nicht auf der Warteliste.")
             return self._handle_redirect(request, 'profile')
-        
+
         company.waiting_list = False
         company.save()
         messages.success(request, "Sie wurden von der Warteliste entfernt.")
         return self._handle_redirect(request, 'profile')
-    
+
     def delete_account(self, request, *args, **kwargs):
+        """
+        Deletes the user.
+        Goes through various checks to ensure that:
+        - The User enters the correct password.
+        - The User isn't the only active admin.
+        - User has no bookings.
+        """
         user = request.user
         company = self._get_company(user)
 
-        # Passwort auslesen und prüfen
+        # Checks that user entered correct password
         password = request.POST.get("password")
         if not password or not authenticate(username=user.username, password=password):
             messages.error(request, "Passwort ist falsch oder fehlt.")
             return self._handle_redirect(request, 'profile')
 
-        # Prüfen, ob der User ein Admin ist und ob mehrere Admins im System sind
+        # Checks, if user is the only admin
         if user.is_superuser:
             if self._is_only_one_admin():
                 messages.error(request, "Der einzige Admin kann nicht gelöscht werden.")
                 return self._handle_redirect(request, 'profile')
-            
-        # Prüfen, ob Booking existiert
+
+        # Checks, if user has booking
         has_booking = self._has_booking(company, ['confirmed', 'canceled'])
         if has_booking:
             messages.error(request, "Konto kann nicht gelöscht werden, solange eine Buchung besteht.")
             return self._handle_redirect(request, 'profile')
-        
-        # Wenn keine Buchung existiert, User löschen
+
+        # If every check is false, the account is deleted.
         if company:
             company.delete()
         user.delete()
         logout(request)
         messages.success(request, "Ihr Konto wurde erfolgreich gelöscht.")
         return self._handle_redirect(request, 'home')
-    
+
     def get_modal_cancel_booking(self, request, *args, **kwargs):
+        """
+        Calls the modal to cancel a booking.
+        Inserts the cancellationfee into the modal.
+        """
         user = request.user
         company = self._get_company(user)
         system_config = SystemConfiguration.objects.first()
@@ -720,13 +925,20 @@ class ProfileView(LoginRequiredMixin, View):
         if request.htmx:
             return render(request, "settings/cancel_booking.html", context)
         return HttpResponseBadRequest("Invalid request")
-    
+
     def get_modal_delete_account(self, request, *args, **kwargs):
+        """
+        Calls the modal to delete the account.
+        """
         if request.htmx:
             return render(request, "settings/delete_account.html")
         return HttpResponseBadRequest("Invalid request")
-    
+
+
 class BookABoothView(LoginRequiredMixin, TemplateView):
+    """
+    View where the user chooses a booth to book.
+    """
     template_name = "bookabooth.html"
 
     def get_context_data(self, **kwargs):
@@ -798,6 +1010,7 @@ class BookABoothView(LoginRequiredMixin, TemplateView):
 
         return context
 
+
 def booking_modal(request, booth_id):
     """
     Is called when BookingModal is opened.
@@ -809,7 +1022,7 @@ def booking_modal(request, booth_id):
     # Check if User is logged in and has a company
     if not request.user.is_authenticated or not hasattr(request.user, 'company'):
         return HttpResponseForbidden("Bitte melden Sie sich an, um einen Stand zu buchen.")
-    
+
     user = request.user
     company = user.company
 
@@ -823,7 +1036,7 @@ def booking_modal(request, booth_id):
     # Check if the profile is complete
     if not checklist_complete:
         return HttpResponseForbidden("Bitte vervollständigen Sie Ihr Profil, bevor Sie einen Stand buchen.")
-    
+
     # Check if privacy policy was accepted
     if not user.privacy_policy_accepted:
         return HttpResponseForbidden("Bitte akzeptieren Sie die Nutzungsbedingungen, bevor Sie einen Stand buchen.")
@@ -836,7 +1049,7 @@ def booking_modal(request, booth_id):
 
     if has_other_booking:
         return HttpResponseForbidden("Sie haben bereits einen anderen Stand gebucht.")
-    
+
     # Check if user has a blocked booking
     has_blocked_booking = Booking.objects.filter(
         company=company,
@@ -844,8 +1057,9 @@ def booking_modal(request, booth_id):
     ).exclude(booth=booth).exists()
 
     if has_blocked_booking:
-        return HttpResponseForbidden("Sie haben bereits eine Buchung in Bearbeitung. Warten Sie ein paar Minuten und versuchen Sie es erneut.")
-    
+        return HttpResponseForbidden(
+            "Sie haben bereits eine Buchung in Bearbeitung. Warten Sie ein paar Minuten und versuchen Sie es erneut.")
+
     total_price = sum(package.price for package in booth.service_package.all())
 
     # TODO: Wird das Booking auch erstellt, wenn das Modal sofort wieder geschlossen wird?
@@ -869,6 +1083,7 @@ def booking_modal(request, booth_id):
         'booking': booking,
         'system': system_config
     })
+
 
 @require_POST
 @login_required
@@ -895,12 +1110,17 @@ def confirm_booking(request, booth_id):
     response['HX-Redirect'] = reverse('home')
     return response
 
+
 def exhibitor_info(request):
     return render(request, "components/ausstellerinfo.html")
+
 
 @login_required
 @user_passes_test(lambda u: u.is_superuser)
 def export_to_excel(request):
+    """
+    Creates an Excel file with information about the companies which have a booking.
+    """
     response = HttpResponse(content_type='application/ms-excel')
     filename = f"Buchungen-{timezone.now().strftime('%Y-%m-%d')}.xlsx"
     response["Content-Disposition"] = f"attachment; filename=\"{filename}\""
@@ -909,7 +1129,8 @@ def export_to_excel(request):
     ws = wb.active
     ws.title = "Buchungen"
 
-    headers = ["Firmenname", "Ansprechpartner", "Rechnungsadresse", "Bemerkung", "Standnummer", "Preis", "Stornierung", "Rechnungsnummer", "Innenauftrag", "Kundennummer"]
+    headers = ["Firmenname", "Ansprechpartner", "Rechnungsadresse", "Bemerkung", "Standnummer", "Preis", "Stornierung",
+               "Rechnungsnummer", "Innenauftrag", "Kundennummer"]
     ws.append(headers)
 
     bookings = Booking.objects.select_related(
@@ -966,10 +1187,16 @@ def export_to_excel(request):
     wb.save(response)
     return response
 
+
 def exhibitorlistView(request):
+    """
+    View for the Exhibitor List.
+    Displays company logo, description, location and booth.
+    """
     confirmed_bookings = Booking.objects.filter(company=OuterRef('pk'), status='confirmed')
     booth_subquery = Booking.objects.filter(company=OuterRef('pk'), status='confirmed').values('booth__title')[:1]
-    location_subquery = Booking.objects.filter(company=OuterRef('pk'), status='confirmed').values('booth__location__location')[:1]
+    location_subquery = Booking.objects.filter(company=OuterRef('pk'), status='confirmed').values(
+        'booth__location__location')[:1]
 
     companies = Company.objects.filter(
         exhibitor_list=True,
