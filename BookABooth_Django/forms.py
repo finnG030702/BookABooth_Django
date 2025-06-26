@@ -1,6 +1,7 @@
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm, PasswordChangeForm, \
     PasswordResetForm, SetPasswordForm
 from django import forms
+from django.core.exceptions import ValidationError
 from django.utils.safestring import mark_safe
 
 from .models import Booth, Location, User, ServicePackage, Company
@@ -36,6 +37,13 @@ class CustomUserCreationForm(UserCreationForm):
             field.widget.attrs.update({
                 'class': INPUT_STYLE,
             })
+
+    # Checks that a company only has one user
+    def clean_company_name(self):
+        name = self.cleaned_data['company_name']
+        if Company.objects.filter(name__iexact=name).exists():
+            raise ValidationError("Der Firmenname ist bereits vergeben.")
+        return name
 
 
 class CustomUserChangeForm(forms.ModelForm):

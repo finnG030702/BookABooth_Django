@@ -168,9 +168,7 @@ class SignUpView(CreateView):
     template_name = "registration/signup.html"
 
     def form_valid(self, form):
-        company_name = form.cleaned_data["company_name"]
-        company, _ = Company.objects.get_or_create(
-            name=company_name)  # Returns company and a boolean
+        company, created = Company.objects.create(name=form.cleaned_data["company_name"])  # Returns company and a boolean
 
         user = form.save(commit=False)
         user.company = company
