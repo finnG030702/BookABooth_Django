@@ -14,6 +14,3 @@ Following steps will set up BookABooth for Development.
 - Migrate database
 - Create superuser
 - Runserver
-- System anlegen muss
-- Dummydata einfügen
-- Nochmal CSS an allen Knöpfen durchgehen
