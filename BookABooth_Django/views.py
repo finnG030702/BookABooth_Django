@@ -89,7 +89,7 @@ class HomeView(TemplateView):
 
             booking_status = None
             if company:
-                latest_booking = company.bookings.order_by('-received').first()
+                latest_booking = company.company_bookings.order_by('-received').first()
                 if latest_booking:
                     booking_status = latest_booking.status.upper()
 
@@ -99,7 +99,7 @@ class HomeView(TemplateView):
         elif user.is_authenticated and user.is_staff:
             locations = Location.objects.annotate(
                 total_booths=Count('booths'),
-                booked_booths=Count('booths__bookings', filter=Q(booths__bookings__status='confirmed'))
+                booked_booths=Count('booths__booth_bookings', filter=Q(booths__booth_bookings__status='confirmed'))
             )
 
             location_data = []
@@ -117,7 +117,7 @@ class HomeView(TemplateView):
             companies = Company.objects.prefetch_related(
                 'employees',
                 Prefetch(
-                    'bookings',
+                    'company_bookings',
                     queryset=Booking.objects.select_related('booth__location')
                 )
             ).all()
@@ -130,7 +130,7 @@ class HomeView(TemplateView):
                     "logo": bool(company.logo),
                     "description": bool(company.description),
                     "phone": bool(company.employees.first().phone),
-                    "bookings": company.bookings.all(),
+                    "bookings": company.company_bookings.all(),
                 })
 
             user_with_email = User.objects.filter(
