@@ -38,8 +38,10 @@ class CustomUserCreationForm(UserCreationForm):
                 'class': INPUT_STYLE,
             })
 
-    # Checks that a company only has one user
     def clean_company_name(self):
+        """
+        Checks that the company doesn't already exist. Raises Error if it does.
+        """
         name = self.cleaned_data['company_name']
         if Company.objects.filter(name__iexact=name).exists():
             raise ValidationError("Der Firmenname ist bereits vergeben.")

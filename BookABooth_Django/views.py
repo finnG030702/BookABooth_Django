@@ -168,7 +168,10 @@ class SignUpView(CreateView):
     template_name = "registration/signup.html"
 
     def form_valid(self, form):
-        company, created = Company.objects.create(name=form.cleaned_data["company_name"])  # Returns company and a boolean
+        """
+        Validates the form. Uses CustomUserCreationForm to validate that the company doesn't already exist.
+        """
+        company = Company.objects.create(name=form.cleaned_data["company_name"])
 
         user = form.save(commit=False)
         user.company = company
@@ -179,8 +182,7 @@ class SignUpView(CreateView):
         self.object = user
         self.send_verification_email(user)
 
-        messages.success(self.request,
-                         "Registrierung erfolgreich! Bitte überprüfen Sie Ihre E-Mails zur Verifizierung.")
+        messages.success(self.request, "Registrierung erfolgreich! Bitte überprüfen Sie Ihre E-Mails zur Verifizierung.")
         return HttpResponseRedirect(self.get_success_url())
 
     def send_verification_email(self, user):
