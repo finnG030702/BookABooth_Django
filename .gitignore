@@ -10,3 +10,4 @@ BookABooth_Django/__pycache__/
 node_modules/
 .idea
 media/
+.env

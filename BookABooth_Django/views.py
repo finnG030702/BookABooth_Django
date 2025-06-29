@@ -603,7 +603,6 @@ class WaitingListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
         companies = Company.objects.order_by('-waiting_list', 'name')
         return render(request, "adminMenu/waitingList/waitinglist_table_body.html", {'companies': companies})
 
-    # TODO: The message should pop up when the button is pressed. Currently only shows on page reload.
     def add_to_waitinglist(request, company_id):
         """
         Is called when company is added to waiting list.
