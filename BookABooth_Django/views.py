@@ -164,7 +164,6 @@ class SignUpView(CreateView):
     CustomUserCreationForm adds Company name to User data
     """
     form_class = CustomUserCreationForm
-    success_url = reverse_lazy("login")
     template_name = "registration/signup.html"
 
     def form_valid(self, form):
@@ -233,7 +232,6 @@ class UserloginView(LoginView):
     View for the Login of a user. If logged in, reverts back to home.html
     """
     form_class = CustomUserLoginForm
-    success_url = reverse_lazy("login")
     template_name = "registration/login.html"
 
 
