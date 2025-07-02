@@ -542,6 +542,10 @@ class BookingCancelView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
         """
         booking = get_object_or_404(Booking, pk=kwargs['pk'])
 
+        if booking.status.lower() == "canceled":
+            messages.warning(request, "Diese Buchung ist bereits storniert.")
+            return redirect("booking_list")
+
         try:
             booking.cancel(canceled_by_admin=True)
             messages.success(request, "Buchung wurde erfolgreich storniert.")
