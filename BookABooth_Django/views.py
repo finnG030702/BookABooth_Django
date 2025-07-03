@@ -47,6 +47,7 @@ def accept_privacy_policy(request):
 def add_to_waiting_list(request):
     """
     Sets flag for Waiting List to True.
+    Is called, when the user adds himself.
     """
     user = request.user
     if hasattr(user, "company"):
@@ -641,25 +642,24 @@ class WaitingListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
         companies = Company.objects.filter(waiting_list=True)
 
         for company in companies:
-            users = company.employees.all()
-            for user in users:
-                message = (
-                    f"Moin {user.username},\n\n"
-                    "Sie stehen beim diesjährigen Jade Karrieretag auf der Warteliste. "
-                    "Soeben sind wieder Stände zur Buchung verfügbar geworden.\n"
-                    "Eine Reservierung kann über das Buchungstool durchgeführt werden.\n\n"
-                    "Sollten Sie diese Benachrichtigungen nicht mehr empfangen wollen, "
-                    "können Sie sich im Buchungstool von der Warteliste entfernen.\n\n"
-                    "Mit freundlichen Grüßen\n"
-                    "Jade Hochschule"
-                )
-                send_mail(
-                    subject="Jade Karrieretag Warteliste",
-                    message=message,
-                    from_email="noreply@bookabooth.de",
-                    recipient_list=[user.email],
-                    fail_silently=False,
-                )
+            user = company.employees.first()
+            message = (
+                f"Moin {user.username},\n\n"
+                "Sie stehen beim diesjährigen Jade Karrieretag auf der Warteliste. "
+                "Soeben sind wieder Stände zur Buchung verfügbar geworden.\n"
+                "Eine Reservierung kann über das Buchungstool durchgeführt werden.\n\n"
+                "Sollten Sie diese Benachrichtigungen nicht mehr empfangen wollen, "
+                "können Sie sich im Buchungstool von der Warteliste entfernen.\n\n"
+                "Mit freundlichen Grüßen\n"
+                "Jade Hochschule"
+            )
+            send_mail(
+                subject="Jade Karrieretag Warteliste",
+                message=message,
+                from_email="noreply@bookabooth.de",
+                recipient_list=[user.email],
+                fail_silently=False,
+            )
 
 
 @login_required
