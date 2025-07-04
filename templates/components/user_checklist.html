@@ -125,11 +125,17 @@
         </p>
 
         {% elif checklist.bookingStatus != 'CONFIRMED' and checklist.bookingStatus != 'BLOCKED' and checklist.allBoothsOccupied and not checklist.waitingList %}
-        <p class="mb-2 text-gray-800">
-            Alle Stände sind bereits gebucht. Sie können sich
-            <span class="text-red-600 hover:underline font-semibold cursor-pointer" onclick="addToWaitingList()">hier</span> für die
-            Warteliste eintragen.
-        </p>
+        <div class="mb-2 text-gray-800">
+            <form hx-post="{% url 'user_add_to_waitinglist' %}" hx-swap="none" hx-trigger="submit">
+                {% csrf_token %}
+                Alle Stände sind bereits gebucht. Sie können sich
+                <button type="submit"
+                    class="text-red-600 hover:underline font-semibold cursor-pointer bg-transparent border-none p-0">
+                    hier
+                </button>
+                für die Warteliste eintragen.
+            </form>
+        </div>
 
         {% elif checklist.bookingStatus != 'CONFIRMED' and checklist.bookingStatus != 'BLOCKED' and checklist.allBoothsOccupied and checklist.waitingList %}
         <p class="mb-2 text-gray-800">
@@ -161,44 +167,3 @@
     </p>
 
 </div>
-
-<script>
-    function addToWaitingList() {
-        fetch("{% url 'user_add_to_waitinglist' %}", {
-            method: "POST",
-            headers: {
-                "X-CSRFToken": getCookie("csrftoken"),
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({})
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                location.reload()
-            } else {
-                alert("Fehler beim Eintragen auf die Warteliste.");
-            }
-        })
-        .catch(error => {
-            console.error("Fehler:", error);
-            alert("Ein Fehler ist aufgetreten.");
-        });
-    }
-
-    // CSRF-Token Hilfsfunktion
-    function getCookie(name) {
-        let cookieValue = null;
-        if (document.cookie && document.cookie !== "") {
-            const cookies = document.cookie.split(";");
-            for (const cookie of cookies) {
-                const [key, value] = cookie.trim().split('=');
-                if (key == name) {
-                    cookieValue = decodeURIComponent(value);
-                    break;
-                }
-            }
-        }
-        return cookieValue;
-    }
-</script>

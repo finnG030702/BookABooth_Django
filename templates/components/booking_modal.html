@@ -26,10 +26,11 @@
                 Abbrechen
             </button>
             <button id="confirm-btn"
-                    hx-post="/bookabooth/booking-modal/{{ booth.id }}/confirm/"
+                    hx-post="{% url 'confirm_booking' booth.id %}"
                     hx-target="body"
                     hx-swap="none"
-                    disabled class="bg-green-500 px-4 py-2 rounded text-white hover:bg-green-700 cursor-pointer disabled:cursor-not-allowed disabled:bg-green-300">
+                    disabled 
+                    class="bg-green-500 px-4 py-2 rounded text-white hover:bg-green-700 cursor-pointer disabled:cursor-not-allowed disabled:bg-green-300">
                 Buchung bestätigen
             </button>
         </div>

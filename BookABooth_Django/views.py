@@ -55,7 +55,9 @@ def add_to_waiting_list(request):
         company.waiting_list = True
         company.save()
         messages.success(request, "Sie wurden der Warteliste hinzugefügt.")
-        return JsonResponse({"success": True})
+        response = JsonResponse({"success": True})
+        response["HX-Redirect"] = reverse("home")
+        return response
     return JsonResponse({"success": False, "error": "Kein Unternehmen gefunden"}, status=400)
 
 
