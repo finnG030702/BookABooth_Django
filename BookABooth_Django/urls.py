@@ -3,7 +3,7 @@ from . import views
 from .views import (BookABoothView, HomeView,
                     CustomPasswordChangeView,
                     SignUpView,
-                    LoginView,
+                    UserloginView,
                     PasswortResetView,
                     PasswordResetDoneView,
                     PasswordResetConfirmView,
@@ -23,7 +23,7 @@ urlpatterns = [
     path("", HomeView.as_view(), name="home"),
 
     path("accounts/signup/", SignUpView.as_view(), name="signup"),
-    path("accounts/login/", LoginView.as_view(), name="login"),
+    path("accounts/login/", UserloginView.as_view(), name="login"),
     path("accounts/verify/<uidb64>/<token>/", verify_email, name="verify_email"),
 
     path("accounts/password_change/", CustomPasswordChangeView.as_view(), name="password_change"),

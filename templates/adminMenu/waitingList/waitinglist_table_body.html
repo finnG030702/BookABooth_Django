@@ -1,39 +1,48 @@
-{% for company in companies %}
-<tr>
-    <td class="px-6 py-4 whitespace-nowrap text-sm text-blue-600 hover:underline">{{ company.id }}</td>
-    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ company.name }}</td>
-    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ company.employees.first.email }}</td>
-    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-        {% if company.waiting_list %}
-            <span class="text-green-600 font-semibold">Ja</span>
-        {% else %}
-            <span class="text-red-600 font-semibold">Nein</span>
-        {% endif %}
-    </td>
-    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-        {% if company.waiting_list %}
-        <button 
-            hx-post="{% url 'remove_from_waitinglist' company.id %}"
-            hx-target="#waitinglist-table"
-            hx-swap="innerHTML"
-            type="button" 
-            class="cursor-pointer text-white hover:bg-red-600 rounded-lg px-4 py-2 bg-red-500">
-            Von Warteliste entfernen
-        </button>
-        {% else %}
-        <button 
-            hx-post="{% url 'add_to_waitinglist' company.id %}"
-            hx-target="#waitinglist-table"
-            hx-swap="innerHTML"
-            type="button" 
-            class="cursor-pointer text-white hover:bg-green-600 rounded-lg px-4 py-2 bg-green-500">
-            Zur Warteliste hinzufügen
-        </button>
-        {% endif %}
-    </td>
-</tr>
-{% empty %}
-<tr>
-    <td colspan="3" class="px-6 py-4 text-center text-sm text-gray-500">Keine Unternehmen im System.</td>
-</tr>
-{% endfor %}
+<tbody id="waitinglist-table" class="bg-white divide-y divide-gray-200">
+
+    {% for message in messages %}
+        <div hx-swap-oob="beforeend:#messages">
+            {% include 'components/message_item.html' %}
+        </div>
+    {% endfor %}
+
+    {% for company in companies %}
+    <tr>
+        <td class="px-6 py-4 whitespace-nowrap text-sm text-blue-600 hover:underline">{{ company.id }}</td>
+        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ company.name }}</td>
+        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ company.employees.first.email }}</td>
+        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+            {% if company.waiting_list %}
+                <span class="text-green-600 font-semibold">Ja</span>
+            {% else %}
+                <span class="text-red-600 font-semibold">Nein</span>
+            {% endif %}
+        </td>
+        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+            {% if company.waiting_list %}
+            <button 
+                hx-post="{% url 'remove_from_waitinglist' company.id %}"
+                hx-target="#waitinglist-table"
+                hx-swap="outerHTML"
+                type="button" 
+                class="cursor-pointer text-white hover:bg-red-600 rounded-lg px-4 py-2 bg-red-500">
+                Von Warteliste entfernen
+            </button>
+            {% else %}
+            <button 
+                hx-post="{% url 'add_to_waitinglist' company.id %}"
+                hx-target="#waitinglist-table"
+                hx-swap="outerHTML"
+                type="button" 
+                class="cursor-pointer text-white hover:bg-green-600 rounded-lg px-4 py-2 bg-green-500">
+                Zur Warteliste hinzufügen
+            </button>
+            {% endif %}
+        </td>
+    </tr>
+    {% empty %}
+    <tr>
+        <td colspan="3" class="px-6 py-4 text-center text-sm text-gray-500">Keine Unternehmen im System.</td>
+    </tr>
+    {% endfor %}
+</tbody>

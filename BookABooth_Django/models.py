@@ -1,35 +1,37 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.core.mail import send_mail
+from django.forms import ValidationError
 from django.utils import timezone
 from decimal import Decimal
 
-class Booking(models.Model): # TODO: Kommentare für Models überarbeiten
-    """
-    Booking, which will be created by users.
 
-    received (datetime): When the booking was received.
-    status (str): Status of the booking (blocked, prebooked, confirmed, canceled). Prebooked is used as default.
-    confirmed (datetime): When the booking was confirmed via e-mail.
-    price (decimal): Price of the booking, depends on ServicePackage and Location.
-    cancellationfee (decimal): Price for the cancellation, percentage of price.
-    company (Company): Which Company sent this booking.
-    booth (Booth): Which booth is booked with this booking.
+class Booking(models.Model):
+    """
+    Represents a booth booking submitted by a company.
+
+    Fields:
+        received (datetime): Timestamp when the booking was received.
+        status (str): Current status of the booking. Default is 'blocked'.
+        confirmed (datetime): Timestamp when the booking was confirmed via email.
+        price (decimal): Final price of the booking, calculated from service package and location.
+        cancellationfee (decimal): Fee in case of cancellation, as a percentage of the price.
+        company (Company): Company that submitted the booking.
+        booth (Booth): The specific booth assigned to this booking.
     """
 
     class Status(models.TextChoices):
         BLOCKED = 'blocked', 'Blocked'
-        PREBOOKED = 'prebooked', 'Prebooked'
         CONFIRMED = 'confirmed', 'Confirmed'
         CANCELED = 'canceled', 'Canceled'
 
     received = models.DateTimeField(blank=True, null=True)
-    status = models.CharField(max_length=20, choices=Status.choices, default=Status.PREBOOKED)
+    status = models.CharField(max_length=20, choices=Status.choices, default=Status.BLOCKED)
     confirmed = models.DateTimeField(blank=True, null=True)
     price = models.DecimalField(max_digits=21, decimal_places=2, blank=True, null=True)
     cancellationfee = models.DecimalField(max_digits=21, decimal_places=2, blank=True, null=True)
-    company = models.ForeignKey('Company', on_delete=models.DO_NOTHING, related_name="bookings")
-    booth = models.ForeignKey('Booth', on_delete=models.SET_NULL, null=True, blank=True, related_name="bookings") # TODO: Nochmal related_names richtig machen.
+    company = models.ForeignKey('Company', on_delete=models.PROTECT, related_name="company_bookings")
+    booth = models.ForeignKey('Booth', on_delete=models.SET_NULL, null=True, blank=True, related_name="booth_bookings")
 
     def cancel(self, canceled_by_admin=False):
 
@@ -78,19 +80,21 @@ class Booking(models.Model): # TODO: Kommentare für Models überarbeiten
 
 class Booth(models.Model):
     """
-    Booth, which can be booked by users.
+    Represents a booth that can be booked by a company.
 
-    title (str): Name of the booth (A1, A2, B1 etc.).
-    ceiling_height (decimal): How tall the ceiling is at the booth's location.
-    available (boolean): If the booth is already booked (default=True).
-    location (Location): The physical location where the booth will be.
-    service_package (ServicePackage): Defines if the booth is standard or premium.
+    Fields:
+        title (str): Unique name of the booth (e.g., A1, B2).
+        ceiling_height (decimal): Height of the ceiling at the booth's location.
+        available (bool): Indicates whether the booth is currently available.
+                        This field is automatically updated via booking logic.
+        location (Location): Physical location where the booth is placed.
+        service_package (ManyToMany): Package(s) assigned to this booth (e.g., Standard, Premium).
     """
     title = models.CharField(unique=True, max_length=200)
     ceiling_height = models.DecimalField(max_digits=21, decimal_places=2, blank=True, null=True)
     available = models.BooleanField(default=True)
-    location = models.ForeignKey('Location', on_delete=models.SET_NULL, blank=True, null=True, related_name='booths')
-    service_package = models.ManyToManyField('ServicePackage', blank=True, related_name='servicePackages')
+    location = models.ForeignKey('Location', on_delete=models.CASCADE, blank=True, null=True, related_name='booths')
+    service_package = models.ManyToManyField('ServicePackage', blank=True, related_name='booths')
 
     def __str__(self):
         return self.title
@@ -98,14 +102,16 @@ class Booth(models.Model):
 
 class Company(models.Model):
     """
-    The company, which books the booth. User is an employee of the company.
+    Represents an exhibiting company participating in the event.
 
-    name (str): Name of the comapny.
-    billing_adress (str): Adress of the company, used for billing after the exhibition.
-    logo (image): Logo of the company, which will be displayed in the app.
-    description (str): A description of the company, will be displayed on the exhibitor list.
-    waiting_list (boolean): Boolean, if the company is on the waiting list or not.
-    exhibitor_list (boolean): Boolean, if the company is on the exhibitor list or not.
+    Fields:
+        name (str): Name of the company (must be unique).
+        billing_address (str): Address used for invoicing after the exhibition.
+        logo (Image): Company logo, shown in the exhibitor list and the profile.
+        description (str): Short description displayed in the public exhibitor list.
+        comment (str): Optional internal comment (e.g. for invoicing notes).
+        waiting_list (bool): Indicates if the company is on the waiting list.
+        exhibitor_list (bool): Indicates if the company should appear in the exhibitor list.
     """
     name = models.CharField(max_length=200, blank=True, null=True, unique=True)
     billing_address = models.CharField(max_length=255, blank=True, null=True)
@@ -121,36 +127,58 @@ class Company(models.Model):
 
 class System(models.Model):
     """
-    Represents the system as a whole. Is used to disable bookings.
+    Global system state used to control whether bookings are currently permitted.
 
-    enabled (boolean): When enabled, the booking is permitted for users.
+    Fields:
+        enabled (bool): If True, new bookings can be created. If False, booking is disabled.
+    
+    Note:
+        Only one instance of this model should exist at any given time.
+        It serves as a system-wide toggle for enabling/disabling booth bookings.
     """
     enabled = models.BooleanField(default=False)
 
+    def save(self, *args, **kwargs):
+        if not self.pk and System.objects.exists():
+            raise ValidationError("Es darf nur eine Instanz von System geben.")
+        return super(System, self).save(*args, **kwargs)
+
     def __str__(self):
-        x = str(self.id)
-        return x
-    
+        return f"Booking freigeschaltet: {self.enabled}"
+
+
 class SystemConfiguration(models.Model):
     """
-    To configure the reimbursement. Cancel-Modal will pull the values out of this model.
+    Defines system-wide cancellation reimbursement rules for booth bookings.
 
-    cancellation_reimbursement: The percentage of the booking price that is reimbursed when a booking is cancelled.
-    cancellation_reimbursement_until: The date until which the cancellation reimbursement is valid, after this date there is no reimbursement.
+    Fields:
+        cancellation_reimbursement (int): Percentage (0-100) of the booking price that will be charged as a fee in the case of cancellation.
+        cancellation_reimbursement_until (date): Latest date for eligibility for reimbursement. After this date, the entire booking price will be charged as a fee.
+
+    Note:
+        These values are typically used in cancellation modals or refund logic.
+        Only one instance of this model should exist in the system.
     """
     cancellation_reimbursement = models.PositiveIntegerField(default=100)
     cancellation_reimbursement_until = models.DateField()
 
+    def save(self, *args, **kwargs):
+        if not self.pk and SystemConfiguration.objects.exists():
+            raise ValidationError("Es darf nur eine Instanz von SystemConfiguration geben.")
+        return super(SystemConfiguration, self).save(*args, **kwargs)
+
     def __str__(self):
         return "System Configuration"
-    
+
+
 class User(AbstractUser):
     """
-    User, which extends the already established Django-User. UUID and is_verified are managed ELSEWHERE
+    Custom user model extending Django's built-in AbstractUser.
 
-    phone (decimal): Phone number of the user.
-    privacy_policy_accepted (boolean): Will be set True when the user agrees to the privacy policy.
-    company (Company): The company the user works for. 
+    Fields:
+        phone (str): Phone number of the user (max. 20 characters).
+        privacy_policy_accepted (bool): Indicates whether the user has accepted the privacy policy.
+        company (Company): Company the user is assigned to. May be null for admins.
     """
     phone = models.TextField(max_length=20, blank=True, null=True)
     privacy_policy_accepted = models.BooleanField(default=False, blank=False, null=False)
@@ -162,13 +190,14 @@ class User(AbstractUser):
 
 class Location(models.Model):
     """
-    Where the booth is located. Has a name and a picture, which will be displayed in the app.
+    Represents a physical location where booths are placed (e.g., Aula, Tent 1).
 
-    location (str): Name of the Location (Aula, Zelt 1, ...)
-    site_plan (image): Site plan of the given location.
+    Fields:
+        location (str): Name or label of the location. Must be unique.
+        site_plan (Image): Optional site plan image, used for visual display in the frontend.
     """
     location = models.CharField(unique=True, max_length=200)
-    site_plan = models.ImageField(upload_to='site_plan/', blank=True, null=True)
+    site_plan = models.ImageField(upload_to='site_plan/', blank=False, null=False)
 
     def __str__(self):
         return self.location
@@ -176,24 +205,27 @@ class Location(models.Model):
 
 class ServicePackage(models.Model):
     """
-    Service Package, which will be added to booth.
+    Represents a service package that can be assigned to one or more booths.
 
-    name (str): Name of the package (Standard, Premium, etc.).
-    price (decimal): Price of the service package.
-    description (str): What this package contains.
+    Fields:
+        name (str): Name of the package (e.g., Standard, Premium).
+        price (decimal): Price of the package in EUR.
+        description (str): Short summary of what's included in the package.
     """
-    name = models.CharField(max_length=255, blank=True, null=True)
-    price = models.DecimalField(max_digits=21, decimal_places=2, blank=True, null=True)
+    name = models.CharField(max_length=255, blank=False, null=False)
+    price = models.DecimalField(max_digits=21, decimal_places=2, blank=False, null=False)
     description = models.CharField(max_length=255, blank=True, null=True)
 
     def __str__(self):
         return self.name
 
+
 class TermsUpdateLog(models.Model):
     """
-    Tracks when the terms of service are updated.
+    Log entry that records each time the terms of service are updated.
 
-    updated_at (datetime): When the terms were last updated.
+    Fields:
+        updated_at (datetime): Timestamp of the update. Set automatically on creation.
     """
     updated_at = models.DateTimeField(auto_now_add=True)
 

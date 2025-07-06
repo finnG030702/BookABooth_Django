@@ -109,6 +109,12 @@ class SystemAdmin(admin.ModelAdmin):
     list_display = ('id', 'enabled')
     list_filter = ('id', 'enabled')
 
+    def has_add_permission(self, request):
+        """
+        Prevents adding two instances of System.
+        """
+        return not System.objects.exists()
+
 class SystemConfigurationAdmin(admin.ModelAdmin):
 
     list_display = ('cancellation_reimbursement', 'cancellation_reimbursement_until')

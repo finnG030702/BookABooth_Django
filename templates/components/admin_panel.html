@@ -5,14 +5,14 @@
             <a href="{% url 'export-excel' %}" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-800 cursor-pointer flex items-center justify-center">
                 Rechnungsdaten
             </a>
-            <a href="{{ mailto_all }}?subject=Jade Karrieretag&body=Moin!" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-800 cursor-pointer text-center">
+            <a href="{{ mailto_all }}&subject=Jade Karrieretag&body=Moin!" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-800 cursor-pointer text-center">
                 Mail an <br /> 
                 Alle Firmen <br />
                 <span class="top-0 right-0 -mt-2 bg-white text-black text-xs font-bold px-2 py-1 shadow">
                     {{ total_mail }}
                 </span>
             </a>
-            <a href="{{ mailto_incomplete }}?subject=Jade Karrieretag&body=Moin!" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-800 cursor-pointer text-center">
+            <a href="{{ mailto_incomplete }}&subject=Jade Karrieretag&body=Moin!" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-800 cursor-pointer text-center">
                 Mail an <br />
                 Unvollständige Profile <br />
                 <span class="top-0 right-0 -mt-2 bg-white text-black text-xs font-bold px-2 py-1 shadow">
@@ -57,7 +57,7 @@
     {% endfor %}
 
     <br>
-    <table class="min-w-full bg-white border border-gray-200 shadow.sm rounded-lg overflow-hidden">
+    <table class="min-w-full bg-white border border-gray-200 shadow-sm rounded-lg overflow-hidden">
         <thead class="bg-gray-100">
             <tr>
                 <th class="px-4 py-2 text-left text-sm font-semibold text-gray-700">Firma</th>

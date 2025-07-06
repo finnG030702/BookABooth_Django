@@ -1,12 +1,14 @@
-from re import M
-from django.contrib.auth.forms import UserChangeForm, UserCreationForm, AuthenticationForm, PasswordChangeForm, PasswordResetForm, SetPasswordForm
+from django.contrib.auth.forms import UserCreationForm, AuthenticationForm, PasswordChangeForm, \
+    PasswordResetForm, SetPasswordForm
 from django import forms
+from django.core.exceptions import ValidationError
 from django.utils.safestring import mark_safe
 
 from .models import Booth, Location, User, ServicePackage, Company
 
 INPUT_STYLE = "w-full bg-white border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
 CHECKBOX_STYLE = "h-5 w-5 text-blue-600 focus:ring-blue-400 border-gray-300 rounded relative top-1.5"
+
 
 class CustomUserCreationForm(UserCreationForm):
     """
@@ -17,9 +19,10 @@ class CustomUserCreationForm(UserCreationForm):
         label="Firmenname"
     )
     privacy_policy_accepted = forms.BooleanField(
-        label=mark_safe('Ich habe die <a href="https://www.jade-hs.de/datenschutz" target="_blank" rel="noopener noreferrer" class="text-blue-500 hover:underline">Datenschutzerklärung</a> gelesen und akzeptiert'),
+        label=mark_safe(
+            'Ich habe die <a href="https://www.jade-hs.de/datenschutz" target="_blank" rel="noopener noreferrer" class="text-blue-500 hover:underline">Datenschutzerklärung</a> gelesen und akzeptiert'),
         required=True,
-        widget = forms.CheckboxInput(attrs={
+        widget=forms.CheckboxInput(attrs={
             'class': 'h-4 w-4 text-blue-600 focus:ring-blue-400 border-gray-300 rounded'
         })
     )
@@ -34,6 +37,16 @@ class CustomUserCreationForm(UserCreationForm):
             field.widget.attrs.update({
                 'class': INPUT_STYLE,
             })
+
+    def clean_company_name(self):
+        """
+        Checks that the company doesn't already exist. Raises Error if it does.
+        """
+        name = self.cleaned_data['company_name']
+        if Company.objects.filter(name__iexact=name).exists():
+            raise ValidationError("Der Firmenname ist bereits vergeben.")
+        return name
+
 
 class CustomUserChangeForm(forms.ModelForm):
     """
@@ -70,8 +83,8 @@ class CustomUserChangeForm(forms.ModelForm):
                 'class': INPUT_STYLE,
             })
 
-class CustomCompanyChangeForm(forms.ModelForm):
 
+class CustomCompanyChangeForm(forms.ModelForm):
     class Meta:
         model = Company
         fields = ("name", "billing_address", "comment", "description", "logo", "exhibitor_list")
@@ -111,31 +124,36 @@ class CustomCompanyChangeForm(forms.ModelForm):
             }),
         }
 
+
 class CustomUserLoginForm(AuthenticationForm):
     """
     Form for the login of users.
     """
+
     class Meta:
         model = User
         fields = ('username', 'password')
 
-    def __init__(self, request = ..., *args, **kwargs):
+    def __init__(self, request=..., *args, **kwargs):
         super(CustomUserLoginForm, self).__init__(request, *args, **kwargs)
         for field in self.fields.values():
             field.widget.attrs.update({
                 'class': INPUT_STYLE,
             })
 
+
 class CustomPasswordChangeForm(PasswordChangeForm):
     """
     Form for the user to change the password.
     """
+
     def __init__(self, user, *args, **kwargs):
         super(CustomPasswordChangeForm, self).__init__(user, *args, **kwargs)
         for field in self.fields.values():
             field.widget.attrs.update({
                 'class': INPUT_STYLE,
             })
+
 
 class CustomPasswordResetForm(PasswordResetForm):
     def __init__(self, *args, **kwargs):
@@ -145,6 +163,7 @@ class CustomPasswordResetForm(PasswordResetForm):
                 'class': INPUT_STYLE,
             })
 
+
 class CustomPasswordResetConfirmForm(SetPasswordForm):
     def __init__(self, *args, **kwargs):
         super(CustomPasswordResetConfirmForm, self).__init__(*args, **kwargs)
@@ -152,6 +171,7 @@ class CustomPasswordResetConfirmForm(SetPasswordForm):
             field.widget.attrs.update({
                 'class': INPUT_STYLE,
             })
+
 
 class LocationForm(forms.ModelForm):
     class Meta:
@@ -162,10 +182,12 @@ class LocationForm(forms.ModelForm):
             'site_plan': forms.ClearableFileInput(attrs={'class': INPUT_STYLE}),
         }
 
+
 class BoothForm(forms.ModelForm):
     """
     Form for the Booth-Admin Page. Styling for the fields, custom names for the labels. 
     """
+
     class Meta:
         model = Booth
         fields = ['title', 'ceiling_height', 'available', 'location', 'service_package']
@@ -190,6 +212,7 @@ class BoothForm(forms.ModelForm):
             })
         }
 
+
 class ServicePackageForm(forms.ModelForm):
     class Meta:
         model = ServicePackage
@@ -207,6 +230,7 @@ class ServicePackageForm(forms.ModelForm):
             }),
             'description': forms.TextInput(attrs={'class': INPUT_STYLE}),
         }
+
 
 class CompanyForm(forms.ModelForm):
     mail = forms.EmailField(
@@ -244,7 +268,6 @@ class CompanyForm(forms.ModelForm):
             if user_qs.exists():
                 first_user = user_qs.first()
                 self.fields['mail'].initial = first_user.email
-        
 
     def save(self, commit=True):
         company = super().save(commit)
