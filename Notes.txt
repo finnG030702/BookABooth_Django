@@ -1,0 +1,38 @@
+Todo:
+
+- Bachelorarbeit schreiben:
+ - Abstract fertig.
+ - Einleitung fertig.
+ - Grundlagen Ist wohl fertig. 
+ - Ist-Analyse ist ebenfalls fertig.
+ - Soll-Analyse ist auch fertig.
+ - Implementierung ist fertig.
+ - Den Vergleich ist fertig. 
+ - Das Fazit ist fertig.
+ - Vielleicht nochmal Überschriften anpassen? Definitiv.
+
+- Readme in GitHub fertig machen - Dann auf Repo in BA verweisen. 
+
+- Flash-Messages für Formulare: https://docs.djangoproject.com/en/5.2/ref/contrib/messages/ ✅ Muss noch überall gesetzt werden.🔀
+- Tests einbauen. 
+- Was passiert, wenn ein User sich nicht aktiviert, sondern mit derselben Mail einen zweiten Account mit derselben Company erstellt?
+- Die Datenbank sollte direkt befüllt werden, wenn man das Projekt clont
+- Ohne System funktioniert gar nichts. 
+- CSS an allen Knöpfen durchgehen, wegen Darkmode
+
+Cleanup:
+- Ich muss noch das Admin-Dropdown im Mobile reparieren.
+- Die Buttons sind in Mobile auch etwas kaputt.
+- Die Privacy Message als Pop Up machen? 
+- Im Profil ist der Dateipfad auf dem Server vermerkt. Vielleicht nur den Dateinamen anzeigen?
+- Die partial-Views aus den Klassen rausnehmen. Ist "untypisch" für Django. 
+- Nochmal alle Modale durchgehen, schauen das es gut aussieht. Vielleicht Animation?
+- Die Flash-Messages können auch gerne auftauchen, wenn der Admin Tabellen bearbeitet. 
+- Noch die Todos im Projekt durchgehen. 
+- BookABooth Tabelle auf kleineren Displays kaputt. 
+- Wenn beim Buchen auf Abbrechen gedrückt wird, soll KEINE blocked Booking erstellt werden.
+- Eine AppConfig bauen, wo man zentral Konfigurationseinstellungen tätigen kann?
+- Meine views.py in kleinere Teile zerlegen, ähnlich wie in Spring. 
+- Sortierung im Adminpanel anpassen.
+
+Testpasswort: nrUK6yqB
