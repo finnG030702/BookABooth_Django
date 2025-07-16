@@ -1,0 +1,1414 @@
+[
+{
+  "model": "admin.logentry",
+  "pk": 1,
+  "fields": {
+    "action_time": "2025-06-28T09:41:34.166Z",
+    "user": 1,
+    "content_type": 10,
+    "object_id": "1",
+    "object_repr": "1",
+    "action_flag": 1,
+    "change_message": "[{\"added\": {}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 2,
+  "fields": {
+    "action_time": "2025-06-28T09:41:42.432Z",
+    "user": 1,
+    "content_type": 10,
+    "object_id": "2",
+    "object_repr": "2",
+    "action_flag": 1,
+    "change_message": "[{\"added\": {}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 3,
+  "fields": {
+    "action_time": "2025-06-28T09:41:51.019Z",
+    "user": 1,
+    "content_type": 10,
+    "object_id": "2",
+    "object_repr": "2",
+    "action_flag": 3,
+    "change_message": ""
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 4,
+  "fields": {
+    "action_time": "2025-06-28T09:45:19.858Z",
+    "user": 1,
+    "content_type": 14,
+    "object_id": "1",
+    "object_repr": "System Configuration",
+    "action_flag": 1,
+    "change_message": "[{\"added\": {}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 5,
+  "fields": {
+    "action_time": "2025-07-16T19:44:35.336Z",
+    "user": 1,
+    "content_type": 12,
+    "object_id": "1",
+    "object_repr": "admin",
+    "action_flag": 2,
+    "change_message": "[{\"changed\": {\"fields\": [\"Username\"]}}]"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 1,
+  "fields": {
+    "name": "Can add log entry",
+    "content_type": 1,
+    "codename": "add_logentry"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 2,
+  "fields": {
+    "name": "Can change log entry",
+    "content_type": 1,
+    "codename": "change_logentry"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 3,
+  "fields": {
+    "name": "Can delete log entry",
+    "content_type": 1,
+    "codename": "delete_logentry"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 4,
+  "fields": {
+    "name": "Can view log entry",
+    "content_type": 1,
+    "codename": "view_logentry"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 5,
+  "fields": {
+    "name": "Can add permission",
+    "content_type": 2,
+    "codename": "add_permission"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 6,
+  "fields": {
+    "name": "Can change permission",
+    "content_type": 2,
+    "codename": "change_permission"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 7,
+  "fields": {
+    "name": "Can delete permission",
+    "content_type": 2,
+    "codename": "delete_permission"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 8,
+  "fields": {
+    "name": "Can view permission",
+    "content_type": 2,
+    "codename": "view_permission"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 9,
+  "fields": {
+    "name": "Can add group",
+    "content_type": 3,
+    "codename": "add_group"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 10,
+  "fields": {
+    "name": "Can change group",
+    "content_type": 3,
+    "codename": "change_group"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 11,
+  "fields": {
+    "name": "Can delete group",
+    "content_type": 3,
+    "codename": "delete_group"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 12,
+  "fields": {
+    "name": "Can view group",
+    "content_type": 3,
+    "codename": "view_group"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 13,
+  "fields": {
+    "name": "Can add content type",
+    "content_type": 4,
+    "codename": "add_contenttype"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 14,
+  "fields": {
+    "name": "Can change content type",
+    "content_type": 4,
+    "codename": "change_contenttype"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 15,
+  "fields": {
+    "name": "Can delete content type",
+    "content_type": 4,
+    "codename": "delete_contenttype"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 16,
+  "fields": {
+    "name": "Can view content type",
+    "content_type": 4,
+    "codename": "view_contenttype"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 17,
+  "fields": {
+    "name": "Can add session",
+    "content_type": 5,
+    "codename": "add_session"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 18,
+  "fields": {
+    "name": "Can change session",
+    "content_type": 5,
+    "codename": "change_session"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 19,
+  "fields": {
+    "name": "Can delete session",
+    "content_type": 5,
+    "codename": "delete_session"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 20,
+  "fields": {
+    "name": "Can view session",
+    "content_type": 5,
+    "codename": "view_session"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 21,
+  "fields": {
+    "name": "Can add booth",
+    "content_type": 6,
+    "codename": "add_booth"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 22,
+  "fields": {
+    "name": "Can change booth",
+    "content_type": 6,
+    "codename": "change_booth"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 23,
+  "fields": {
+    "name": "Can delete booth",
+    "content_type": 6,
+    "codename": "delete_booth"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 24,
+  "fields": {
+    "name": "Can view booth",
+    "content_type": 6,
+    "codename": "view_booth"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 25,
+  "fields": {
+    "name": "Can add company",
+    "content_type": 7,
+    "codename": "add_company"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 26,
+  "fields": {
+    "name": "Can change company",
+    "content_type": 7,
+    "codename": "change_company"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 27,
+  "fields": {
+    "name": "Can delete company",
+    "content_type": 7,
+    "codename": "delete_company"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 28,
+  "fields": {
+    "name": "Can view company",
+    "content_type": 7,
+    "codename": "view_company"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 29,
+  "fields": {
+    "name": "Can add location",
+    "content_type": 8,
+    "codename": "add_location"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 30,
+  "fields": {
+    "name": "Can change location",
+    "content_type": 8,
+    "codename": "change_location"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 31,
+  "fields": {
+    "name": "Can delete location",
+    "content_type": 8,
+    "codename": "delete_location"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 32,
+  "fields": {
+    "name": "Can view location",
+    "content_type": 8,
+    "codename": "view_location"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 33,
+  "fields": {
+    "name": "Can add service package",
+    "content_type": 9,
+    "codename": "add_servicepackage"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 34,
+  "fields": {
+    "name": "Can change service package",
+    "content_type": 9,
+    "codename": "change_servicepackage"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 35,
+  "fields": {
+    "name": "Can delete service package",
+    "content_type": 9,
+    "codename": "delete_servicepackage"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 36,
+  "fields": {
+    "name": "Can view service package",
+    "content_type": 9,
+    "codename": "view_servicepackage"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 37,
+  "fields": {
+    "name": "Can add system",
+    "content_type": 10,
+    "codename": "add_system"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 38,
+  "fields": {
+    "name": "Can change system",
+    "content_type": 10,
+    "codename": "change_system"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 39,
+  "fields": {
+    "name": "Can delete system",
+    "content_type": 10,
+    "codename": "delete_system"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 40,
+  "fields": {
+    "name": "Can view system",
+    "content_type": 10,
+    "codename": "view_system"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 41,
+  "fields": {
+    "name": "Can add booking",
+    "content_type": 11,
+    "codename": "add_booking"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 42,
+  "fields": {
+    "name": "Can change booking",
+    "content_type": 11,
+    "codename": "change_booking"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 43,
+  "fields": {
+    "name": "Can delete booking",
+    "content_type": 11,
+    "codename": "delete_booking"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 44,
+  "fields": {
+    "name": "Can view booking",
+    "content_type": 11,
+    "codename": "view_booking"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 45,
+  "fields": {
+    "name": "Can add user",
+    "content_type": 12,
+    "codename": "add_user"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 46,
+  "fields": {
+    "name": "Can change user",
+    "content_type": 12,
+    "codename": "change_user"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 47,
+  "fields": {
+    "name": "Can delete user",
+    "content_type": 12,
+    "codename": "delete_user"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 48,
+  "fields": {
+    "name": "Can view user",
+    "content_type": 12,
+    "codename": "view_user"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 49,
+  "fields": {
+    "name": "Can add terms update log",
+    "content_type": 13,
+    "codename": "add_termsupdatelog"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 50,
+  "fields": {
+    "name": "Can change terms update log",
+    "content_type": 13,
+    "codename": "change_termsupdatelog"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 51,
+  "fields": {
+    "name": "Can delete terms update log",
+    "content_type": 13,
+    "codename": "delete_termsupdatelog"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 52,
+  "fields": {
+    "name": "Can view terms update log",
+    "content_type": 13,
+    "codename": "view_termsupdatelog"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 53,
+  "fields": {
+    "name": "Can add system configuration",
+    "content_type": 14,
+    "codename": "add_systemconfiguration"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 54,
+  "fields": {
+    "name": "Can change system configuration",
+    "content_type": 14,
+    "codename": "change_systemconfiguration"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 55,
+  "fields": {
+    "name": "Can delete system configuration",
+    "content_type": 14,
+    "codename": "delete_systemconfiguration"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 56,
+  "fields": {
+    "name": "Can view system configuration",
+    "content_type": 14,
+    "codename": "view_systemconfiguration"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 1,
+  "fields": {
+    "app_label": "admin",
+    "model": "logentry"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 2,
+  "fields": {
+    "app_label": "auth",
+    "model": "permission"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 3,
+  "fields": {
+    "app_label": "auth",
+    "model": "group"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 4,
+  "fields": {
+    "app_label": "contenttypes",
+    "model": "contenttype"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 5,
+  "fields": {
+    "app_label": "sessions",
+    "model": "session"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 6,
+  "fields": {
+    "app_label": "BookABooth_Django",
+    "model": "booth"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 7,
+  "fields": {
+    "app_label": "BookABooth_Django",
+    "model": "company"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 8,
+  "fields": {
+    "app_label": "BookABooth_Django",
+    "model": "location"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 9,
+  "fields": {
+    "app_label": "BookABooth_Django",
+    "model": "servicepackage"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 10,
+  "fields": {
+    "app_label": "BookABooth_Django",
+    "model": "system"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 11,
+  "fields": {
+    "app_label": "BookABooth_Django",
+    "model": "booking"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 12,
+  "fields": {
+    "app_label": "BookABooth_Django",
+    "model": "user"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 13,
+  "fields": {
+    "app_label": "BookABooth_Django",
+    "model": "termsupdatelog"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 14,
+  "fields": {
+    "app_label": "BookABooth_Django",
+    "model": "systemconfiguration"
+  }
+},
+{
+  "model": "BookABooth_Django.booking",
+  "pk": 1,
+  "fields": {
+    "received": "2025-06-28T12:48:36.835Z",
+    "status": "confirmed",
+    "confirmed": "2025-06-28T12:48:38.781Z",
+    "price": "2499.99",
+    "cancellationfee": null,
+    "company": 10,
+    "booth": 3
+  }
+},
+{
+  "model": "BookABooth_Django.booking",
+  "pk": 2,
+  "fields": {
+    "received": "2025-06-28T12:49:06.197Z",
+    "status": "confirmed",
+    "confirmed": "2025-06-28T12:49:08.465Z",
+    "price": "2499.99",
+    "cancellationfee": null,
+    "company": 8,
+    "booth": 5
+  }
+},
+{
+  "model": "BookABooth_Django.booking",
+  "pk": 3,
+  "fields": {
+    "received": "2025-06-28T12:49:41.784Z",
+    "status": "confirmed",
+    "confirmed": "2025-06-28T12:49:43.413Z",
+    "price": "499.99",
+    "cancellationfee": null,
+    "company": 6,
+    "booth": 9
+  }
+},
+{
+  "model": "BookABooth_Django.booking",
+  "pk": 4,
+  "fields": {
+    "received": "2025-06-28T12:50:23.116Z",
+    "status": "confirmed",
+    "confirmed": "2025-06-28T12:50:25.113Z",
+    "price": "1749.97",
+    "cancellationfee": null,
+    "company": 3,
+    "booth": 13
+  }
+},
+{
+  "model": "BookABooth_Django.booking",
+  "pk": 5,
+  "fields": {
+    "received": "2025-06-28T12:50:46.385Z",
+    "status": "confirmed",
+    "confirmed": "2025-06-28T12:50:51.350Z",
+    "price": "2499.99",
+    "cancellationfee": null,
+    "company": 1,
+    "booth": 15
+  }
+},
+{
+  "model": "BookABooth_Django.booking",
+  "pk": 6,
+  "fields": {
+    "received": "2025-06-28T13:50:44.021Z",
+    "status": "canceled",
+    "confirmed": "2025-06-28T13:50:45.865Z",
+    "price": "499.99",
+    "cancellationfee": "250.00",
+    "company": 2,
+    "booth": 1
+  }
+},
+{
+  "model": "BookABooth_Django.booth",
+  "pk": 1,
+  "fields": {
+    "title": "A1",
+    "ceiling_height": "7.00",
+    "available": true,
+    "location": 1,
+    "service_package": [
+      1
+    ]
+  }
+},
+{
+  "model": "BookABooth_Django.booth",
+  "pk": 2,
+  "fields": {
+    "title": "A2",
+    "ceiling_height": "7.00",
+    "available": true,
+    "location": 1,
+    "service_package": [
+      1,
+      3
+    ]
+  }
+},
+{
+  "model": "BookABooth_Django.booth",
+  "pk": 3,
+  "fields": {
+    "title": "A3",
+    "ceiling_height": "7.00",
+    "available": false,
+    "location": 1,
+    "service_package": [
+      2
+    ]
+  }
+},
+{
+  "model": "BookABooth_Django.booth",
+  "pk": 4,
+  "fields": {
+    "title": "A4",
+    "ceiling_height": "7.00",
+    "available": true,
+    "location": 1,
+    "service_package": [
+      1,
+      4,
+      5
+    ]
+  }
+},
+{
+  "model": "BookABooth_Django.booth",
+  "pk": 5,
+  "fields": {
+    "title": "A5",
+    "ceiling_height": "7.00",
+    "available": false,
+    "location": 1,
+    "service_package": [
+      2
+    ]
+  }
+},
+{
+  "model": "BookABooth_Django.booth",
+  "pk": 6,
+  "fields": {
+    "title": "B1",
+    "ceiling_height": "5.00",
+    "available": true,
+    "location": 1,
+    "service_package": [
+      1,
+      5
+    ]
+  }
+},
+{
+  "model": "BookABooth_Django.booth",
+  "pk": 7,
+  "fields": {
+    "title": "B2",
+    "ceiling_height": "5.00",
+    "available": true,
+    "location": 1,
+    "service_package": [
+      1,
+      3,
+      4,
+      5
+    ]
+  }
+},
+{
+  "model": "BookABooth_Django.booth",
+  "pk": 8,
+  "fields": {
+    "title": "B3",
+    "ceiling_height": "5.00",
+    "available": true,
+    "location": 1,
+    "service_package": [
+      2
+    ]
+  }
+},
+{
+  "model": "BookABooth_Django.booth",
+  "pk": 9,
+  "fields": {
+    "title": "C1",
+    "ceiling_height": "4.50",
+    "available": false,
+    "location": 2,
+    "service_package": [
+      1
+    ]
+  }
+},
+{
+  "model": "BookABooth_Django.booth",
+  "pk": 10,
+  "fields": {
+    "title": "C2",
+    "ceiling_height": "4.50",
+    "available": true,
+    "location": 2,
+    "service_package": [
+      1,
+      3
+    ]
+  }
+},
+{
+  "model": "BookABooth_Django.booth",
+  "pk": 11,
+  "fields": {
+    "title": "C3",
+    "ceiling_height": "4.50",
+    "available": true,
+    "location": 2,
+    "service_package": [
+      1
+    ]
+  }
+},
+{
+  "model": "BookABooth_Django.booth",
+  "pk": 12,
+  "fields": {
+    "title": "D1",
+    "ceiling_height": "10.00",
+    "available": true,
+    "location": 3,
+    "service_package": [
+      2
+    ]
+  }
+},
+{
+  "model": "BookABooth_Django.booth",
+  "pk": 13,
+  "fields": {
+    "title": "D2",
+    "ceiling_height": "10.00",
+    "available": false,
+    "location": 3,
+    "service_package": [
+      1,
+      4,
+      5
+    ]
+  }
+},
+{
+  "model": "BookABooth_Django.booth",
+  "pk": 14,
+  "fields": {
+    "title": "D3",
+    "ceiling_height": "10.00",
+    "available": true,
+    "location": 3,
+    "service_package": [
+      1,
+      3,
+      4,
+      5
+    ]
+  }
+},
+{
+  "model": "BookABooth_Django.booth",
+  "pk": 15,
+  "fields": {
+    "title": "D4",
+    "ceiling_height": "10.00",
+    "available": false,
+    "location": 3,
+    "service_package": [
+      2
+    ]
+  }
+},
+{
+  "model": "BookABooth_Django.company",
+  "pk": 1,
+  "fields": {
+    "name": "ByteBau GmbH",
+    "billing_address": "Bytebau-Straße 10, 57438 Berlin",
+    "logo": "company_logos/1.png",
+    "description": "Demo Beschreibung",
+    "comment": null,
+    "waiting_list": false,
+    "exhibitor_list": true
+  }
+},
+{
+  "model": "BookABooth_Django.company",
+  "pk": 2,
+  "fields": {
+    "name": "Eventure AG",
+    "billing_address": "Eventure 234, 32454 Berlin",
+    "logo": "company_logos/2.png",
+    "description": "Beschreibung",
+    "comment": null,
+    "waiting_list": false,
+    "exhibitor_list": false
+  }
+},
+{
+  "model": "BookABooth_Django.company",
+  "pk": 3,
+  "fields": {
+    "name": "GrünKonzept GmbH",
+    "billing_address": "Konzeptweg 12, 43329 Hamburg",
+    "logo": "company_logos/3.png",
+    "description": "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.",
+    "comment": null,
+    "waiting_list": false,
+    "exhibitor_list": true
+  }
+},
+{
+  "model": "BookABooth_Django.company",
+  "pk": 4,
+  "fields": {
+    "name": "PixelPioniere OHG",
+    "billing_address": "Pixelstraße 87, 32454 Köln",
+    "logo": "",
+    "description": null,
+    "comment": null,
+    "waiting_list": false,
+    "exhibitor_list": false
+  }
+},
+{
+  "model": "BookABooth_Django.company",
+  "pk": 5,
+  "fields": {
+    "name": "Hagedorn & Partner",
+    "billing_address": null,
+    "logo": "",
+    "description": "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.",
+    "comment": null,
+    "waiting_list": false,
+    "exhibitor_list": false
+  }
+},
+{
+  "model": "BookABooth_Django.company",
+  "pk": 6,
+  "fields": {
+    "name": "CodexHub UG",
+    "billing_address": "Codexstraße 32, 54325 Hamburg",
+    "logo": "company_logos/6.jpg",
+    "description": "Beschreibung",
+    "comment": null,
+    "waiting_list": false,
+    "exhibitor_list": true
+  }
+},
+{
+  "model": "BookABooth_Django.company",
+  "pk": 7,
+  "fields": {
+    "name": "Circulon Systems GmbH",
+    "billing_address": null,
+    "logo": "",
+    "description": null,
+    "comment": null,
+    "waiting_list": false,
+    "exhibitor_list": false
+  }
+},
+{
+  "model": "BookABooth_Django.company",
+  "pk": 8,
+  "fields": {
+    "name": "CREAgency",
+    "billing_address": "Straße",
+    "logo": "company_logos/eight_13110545.png",
+    "description": "Beschreibung des Unternehmens.",
+    "comment": null,
+    "waiting_list": false,
+    "exhibitor_list": true
+  }
+},
+{
+  "model": "BookABooth_Django.company",
+  "pk": 9,
+  "fields": {
+    "name": "Dresden Consult GmbH",
+    "billing_address": null,
+    "logo": "",
+    "description": null,
+    "comment": null,
+    "waiting_list": false,
+    "exhibitor_list": false
+  }
+},
+{
+  "model": "BookABooth_Django.company",
+  "pk": 10,
+  "fields": {
+    "name": "Novalith Systems GmbH",
+    "billing_address": "Novalithmus 32",
+    "logo": "company_logos/10.jpg",
+    "description": "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.",
+    "comment": "Rechnung an demo10@bookabooth.de",
+    "waiting_list": false,
+    "exhibitor_list": true
+  }
+},
+{
+  "model": "BookABooth_Django.system",
+  "pk": 1,
+  "fields": {
+    "enabled": true
+  }
+},
+{
+  "model": "BookABooth_Django.systemconfiguration",
+  "pk": 1,
+  "fields": {
+    "cancellation_reimbursement": 50,
+    "cancellation_reimbursement_until": "2025-07-20"
+  }
+},
+{
+  "model": "BookABooth_Django.user",
+  "pk": 1,
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$O8EpDdDND1Cw83vdNubaJy$pavNc32tMaWcKK+P8oy1w+kUyDKaoVPoQoJrSi20iuo=",
+    "last_login": "2025-07-16T19:44:43.038Z",
+    "is_superuser": true,
+    "username": "admin",
+    "first_name": "",
+    "last_name": "",
+    "email": "",
+    "is_staff": true,
+    "is_active": true,
+    "date_joined": "2025-06-28T09:41:12.422Z",
+    "phone": "",
+    "privacy_policy_accepted": false,
+    "company": null,
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "BookABooth_Django.user",
+  "pk": 2,
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$TdVuW2WZpZm57zFqkPxAPU$+qZAeZMx8ZSn6NA2fgT+a2MgXThd3h1Tzdd4Apuu5Js=",
+    "last_login": "2025-06-28T12:50:39.287Z",
+    "is_superuser": false,
+    "username": "demo1",
+    "first_name": "Max",
+    "last_name": "Grund",
+    "email": "max@bytebau.de",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2025-06-28T10:43:50.115Z",
+    "phone": "234567898765432",
+    "privacy_policy_accepted": true,
+    "company": 1,
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "BookABooth_Django.user",
+  "pk": 3,
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$WQqWEEqms8OTmgvXBPTLaS$WsNPQ5EA+6mVIi0sBr72k41H8t7rB1KLBkokQTsmeuk=",
+    "last_login": "2025-06-28T13:50:40.641Z",
+    "is_superuser": false,
+    "username": "demo2",
+    "first_name": "Lisa",
+    "last_name": "Schröder",
+    "email": "lisa@eventure-ag.com",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2025-06-28T10:45:00.500Z",
+    "phone": "3462 62435324",
+    "privacy_policy_accepted": true,
+    "company": 2,
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "BookABooth_Django.user",
+  "pk": 4,
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$kX15Ce8s5HEk1B2UOLmFMs$1J1Np5+Z3jbcfnofjbLbDvb6/2ebCht3FBBXZlYk8AM=",
+    "last_login": "2025-06-28T12:50:17.646Z",
+    "is_superuser": false,
+    "username": "demo3",
+    "first_name": "Daniel",
+    "last_name": "Krüger",
+    "email": "daniel@gruenkonzept.de",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2025-06-28T10:45:48.212Z",
+    "phone": "1234 876543",
+    "privacy_policy_accepted": true,
+    "company": 3,
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "BookABooth_Django.user",
+  "pk": 5,
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$Gpv3CRpTUaFSipx83KjRpp$URQqX4bsY11TzS6Sy63Vye3TE8YOElV79ENv0dpAC9s=",
+    "last_login": "2025-06-28T12:50:10.366Z",
+    "is_superuser": false,
+    "username": "demo4",
+    "first_name": "Nina",
+    "last_name": "Tent",
+    "email": "nina@pixelpioniere.com",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2025-06-28T10:46:33.027Z",
+    "phone": "1234565432",
+    "privacy_policy_accepted": true,
+    "company": 4,
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "BookABooth_Django.user",
+  "pk": 6,
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$3EqqZbRU4GajlsiAhLWySA$2wMrTT3wicDS8/AoVVbipgdgcLWN2DZQk0T0CV5a7eM=",
+    "last_login": "2025-06-28T12:50:02.709Z",
+    "is_superuser": false,
+    "username": "demo5",
+    "first_name": "",
+    "last_name": "",
+    "email": "thomas@hagedorn-partner.de",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2025-06-28T10:47:53.257Z",
+    "phone": "",
+    "privacy_policy_accepted": true,
+    "company": 5,
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "BookABooth_Django.user",
+  "pk": 7,
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$brTjDFlKVjJvvR6GlWP4KE$ZVXxonIOCEBVpi4h2WUR670Mm+IyikD8jdxQ+4SZ5/k=",
+    "last_login": "2025-06-28T12:49:33.474Z",
+    "is_superuser": false,
+    "username": "demo6",
+    "first_name": "Robin",
+    "last_name": "Drake",
+    "email": "robin@codexhub.com",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2025-06-28T10:48:42.489Z",
+    "phone": "4565 12345654",
+    "privacy_policy_accepted": true,
+    "company": 6,
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "BookABooth_Django.user",
+  "pk": 8,
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$TKknwQ2yPsF68fJN3DRLuY$lonBAWyTIsKbBA8oEJmDxqq+cP5/ZmdBV4Xh5RzzG8Q=",
+    "last_login": "2025-06-28T12:49:24.175Z",
+    "is_superuser": false,
+    "username": "demo7",
+    "first_name": "",
+    "last_name": "",
+    "email": "anna@circulon.eu",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2025-06-28T10:49:24.248Z",
+    "phone": null,
+    "privacy_policy_accepted": true,
+    "company": 7,
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "BookABooth_Django.user",
+  "pk": 9,
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$WAwhDx5gLot2121kcSESxo$3BGqsdfn819NRnG2AGVL1E+qNIEDY3+UJ2BsqOH8GlU=",
+    "last_login": "2025-06-28T12:48:56.791Z",
+    "is_superuser": false,
+    "username": "demo8",
+    "first_name": "Nina",
+    "last_name": "Creagency",
+    "email": "nina@creagency.net",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2025-06-28T10:50:09.486Z",
+    "phone": "2345543",
+    "privacy_policy_accepted": true,
+    "company": 8,
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "BookABooth_Django.user",
+  "pk": 10,
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$Scnxm3FVJNbalPZnyyNXPq$KHamUXxpqUKJY+sA4YPQLpzbGPx747cRIGTHE4FwLQA=",
+    "last_login": "2025-06-28T12:47:05.832Z",
+    "is_superuser": false,
+    "username": "demo9",
+    "first_name": "",
+    "last_name": "",
+    "email": "markus@dresden-consult.de",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2025-06-28T10:50:49.339Z",
+    "phone": null,
+    "privacy_policy_accepted": true,
+    "company": 9,
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "BookABooth_Django.user",
+  "pk": 11,
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$bXSS2wCC6mUJoBRNBmD1Sq$+8l1Hg82REJsFdTZnYGueTkcl6fLzO2nhE8tGuhDeEI=",
+    "last_login": "2025-06-28T12:47:19.671Z",
+    "is_superuser": false,
+    "username": "demo10",
+    "first_name": "Paul",
+    "last_name": "Paul",
+    "email": "paul@novalith.com",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2025-06-28T10:51:57.422Z",
+    "phone": "+49 12454343",
+    "privacy_policy_accepted": true,
+    "company": 10,
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "BookABooth_Django.location",
+  "pk": 1,
+  "fields": {
+    "location": "Aula",
+    "site_plan": "site_plan/Lageplan_Aula.jpg"
+  }
+},
+{
+  "model": "BookABooth_Django.location",
+  "pk": 2,
+  "fields": {
+    "location": "Zelt 1",
+    "site_plan": "site_plan/Lageplan_Zelt1.png"
+  }
+},
+{
+  "model": "BookABooth_Django.location",
+  "pk": 3,
+  "fields": {
+    "location": "Zelt 2",
+    "site_plan": "site_plan/Lageplan_Zelt2.png"
+  }
+},
+{
+  "model": "BookABooth_Django.servicepackage",
+  "pk": 1,
+  "fields": {
+    "name": "Standard",
+    "price": "499.99",
+    "description": "Das normale Buchungspaket"
+  }
+},
+{
+  "model": "BookABooth_Django.servicepackage",
+  "pk": 2,
+  "fields": {
+    "name": "Premium",
+    "price": "2499.99",
+    "description": "Premium Buchungspaket mit allen Extras"
+  }
+},
+{
+  "model": "BookABooth_Django.servicepackage",
+  "pk": 3,
+  "fields": {
+    "name": "+ WLAN",
+    "price": "399.99",
+    "description": "Inklusive WLAN"
+  }
+},
+{
+  "model": "BookABooth_Django.servicepackage",
+  "pk": 4,
+  "fields": {
+    "name": "+ Übernachtungsmöglichkeit",
+    "price": "799.99",
+    "description": "Ihnen wird eine Möglichkeit zur Übernachtung gestellt"
+  }
+},
+{
+  "model": "BookABooth_Django.servicepackage",
+  "pk": 5,
+  "fields": {
+    "name": "+ Verpflegung",
+    "price": "449.99",
+    "description": "inkl. Frühstück, Mittag, Abendessen"
+  }
+}
+]
